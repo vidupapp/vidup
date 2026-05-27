@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "vidup — Video for the modern web",
-  description: "Upload, stream, and share videos at lightning speed.",
+  title: "VidUp — One click. Viral ready.",
+  description: "VidUp analyzes your competitors and generates your complete pre-production pack — 3 titles, 1 hook script, and 3 thumbnail ideas — in seconds. Built for YouTube creators.",
 };
 
 export default function RootLayout({
