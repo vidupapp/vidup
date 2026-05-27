@@ -9,7 +9,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
       {/* Logo */}
-      <Link href="/login" className="text-2xl font-bold text-[#0A0A0A] mb-12 tracking-tight">
+      <Link href="/" className="text-2xl font-bold text-[#0A0A0A] mb-12 tracking-tight">
         vid<span className="text-[#E8192C]">up</span>
       </Link>
 
