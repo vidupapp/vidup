@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export const metadata = {
   title: "Dashboard — VidUp",
@@ -65,10 +66,10 @@ export default async function DashboardPage() {
               Generate titles, a hook script, and thumbnail ideas from your competitors in one click.
             </p>
           </div>
-          <button className="bg-[#E8192C] text-white font-semibold px-8 py-3.5 rounded-full hover:bg-[#c9151f] transition-colors text-sm flex items-center gap-2">
+          <Link href="/dashboard/new" className="bg-[#E8192C] text-white font-semibold px-8 py-3.5 rounded-full hover:bg-[#c9151f] transition-colors text-sm flex items-center gap-2">
             <span className="text-base font-bold">+</span>
             New Pack
-          </button>
+          </Link>
           <p className="text-zinc-400 text-xs">1 credit per pack · {credits} remaining</p>
         </div>
       </main>
