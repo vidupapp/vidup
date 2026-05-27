@@ -7,26 +7,25 @@ export const metadata = {
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
       {/* Logo */}
-      <Link href="/" className="text-2xl font-bold text-white mb-10 tracking-tight">
-        vid<span className="text-[#F5C842]">up</span>
+      <Link href="/login" className="text-2xl font-bold text-[#0A0A0A] mb-12 tracking-tight">
+        vid<span className="text-[#E8192C]">up</span>
       </Link>
 
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Create your account</h1>
-          <p className="text-zinc-500 text-sm">
-            Start with 2 free credits/month · No card required
-          </p>
+      <div className="w-full max-w-[360px]">
+        <div className="mb-8">
+          <h1 className="text-[22px] font-bold text-[#0A0A0A] mb-1">Create your account</h1>
+          <p className="text-zinc-500 text-sm">2 free credits/month · No card required</p>
         </div>
 
         <AuthForm mode="signup" />
 
-        <p className="text-center text-zinc-600 text-xs mt-6 leading-relaxed">
+        <p className="text-zinc-400 text-xs mt-6 text-center leading-relaxed">
           By signing up you agree to our{" "}
-          <span className="text-zinc-400">Terms of Service</span> and{" "}
-          <span className="text-zinc-400">Privacy Policy</span>
+          <span className="text-zinc-500 hover:text-[#0A0A0A] cursor-pointer transition-colors">Terms of Service</span>
+          {" "}and{" "}
+          <span className="text-zinc-500 hover:text-[#0A0A0A] cursor-pointer transition-colors">Privacy Policy</span>
         </p>
       </div>
     </div>

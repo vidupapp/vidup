@@ -7,16 +7,16 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
       {/* Logo */}
-      <Link href="/" className="text-2xl font-bold text-white mb-10 tracking-tight">
-        vid<span className="text-[#F5C842]">up</span>
+      <Link href="/login" className="text-2xl font-bold text-[#0A0A0A] mb-12 tracking-tight">
+        vid<span className="text-[#E8192C]">up</span>
       </Link>
 
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Welcome back</h1>
-          <p className="text-zinc-500 text-sm">Sign in to your VidUp account</p>
+      <div className="w-full max-w-[360px]">
+        <div className="mb-8">
+          <h1 className="text-[22px] font-bold text-[#0A0A0A] mb-1">Welcome back</h1>
+          <p className="text-zinc-500 text-sm">Sign in to your account</p>
         </div>
 
         <AuthForm mode="login" />

@@ -7,25 +7,45 @@ export const metadata = {
 
 export default async function DashboardPage() {
   const supabase = await createClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
+  // Fetch credit balance
+  const { data: profile } = await supabase
+    .from("users")
+    .select("credits_balance")
+    .eq("user_id", user.id)
+    .single() as { data: { credits_balance: number } | null; error: unknown };
+
+  const credits = profile?.credits_balance ?? 2;
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 sm:px-10 py-5 border-b border-white/8">
-        <span className="text-xl font-bold tracking-tight">
-          vid<span className="text-[#F5C842]">up</span>
+      <nav className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-zinc-100">
+        {/* Logo */}
+        <span className="text-xl font-bold tracking-tight text-[#0A0A0A]">
+          vid<span className="text-[#E8192C]">up</span>
         </span>
-        <div className="flex items-center gap-4 text-sm">
-          <span className="text-zinc-500 hidden sm:block">{user.email}</span>
+
+        {/* Right side */}
+        <div className="flex items-center gap-4">
+          {/* Credit balance */}
+          <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-full px-4 py-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#E8192C]" />
+            <span className="text-sm font-semibold text-[#0A0A0A]">{credits}</span>
+            <span className="text-sm text-zinc-400">credits</span>
+          </div>
+
+          {/* Sign out */}
           <form action="/auth/signout" method="post">
             <button
-              formAction="/auth/signout"
-              className="text-zinc-400 hover:text-white transition-colors text-sm"
+              type="submit"
+              className="text-sm text-zinc-400 hover:text-[#0A0A0A] transition-colors"
             >
               Sign out
             </button>
@@ -33,51 +53,23 @@ export default async function DashboardPage() {
         </div>
       </nav>
 
-      {/* Main */}
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+      {/* Main — centered New Pack */}
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 px-6">
+        <div className="text-center flex flex-col items-center gap-5">
+          <div className="w-16 h-16 rounded-2xl bg-[#E8192C]/8 flex items-center justify-center">
+            <span className="text-3xl">🎬</span>
+          </div>
           <div>
-            <h1 className="text-2xl font-bold">Your packs</h1>
-            <p className="text-zinc-500 text-sm mt-1">
-              Each pack = 3 titles + 1 hook script + 3 thumbnail ideas
+            <h1 className="text-[22px] font-bold text-[#0A0A0A] mb-1">Ready to create?</h1>
+            <p className="text-zinc-500 text-sm max-w-xs leading-relaxed">
+              Generate titles, a hook script, and thumbnail ideas from your competitors in one click.
             </p>
           </div>
-          <button className="bg-[#F5C842] text-black font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-[#f0bc2e] transition-colors flex items-center gap-2">
-            <span className="text-lg leading-none">+</span>
+          <button className="bg-[#E8192C] text-white font-semibold px-8 py-3.5 rounded-full hover:bg-[#c9151f] transition-colors text-sm flex items-center gap-2">
+            <span className="text-base font-bold">+</span>
             New Pack
           </button>
-        </div>
-
-        {/* Credits banner */}
-        <div className="bg-white/5 border border-white/8 rounded-2xl px-6 py-4 flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-[#F5C842]/15 rounded-full flex items-center justify-center">
-              <span className="text-[#F5C842] font-bold text-sm">2</span>
-            </div>
-            <div>
-              <p className="text-white text-sm font-medium">2 credits remaining</p>
-              <p className="text-zinc-500 text-xs">Free tier · Resets on your signup anniversary</p>
-            </div>
-          </div>
-          <button className="text-[#F5C842] text-sm font-semibold hover:underline">
-            Buy credits →
-          </button>
-        </div>
-
-        {/* Empty state */}
-        <div className="flex flex-col items-center justify-center py-24 gap-5 border border-dashed border-white/10 rounded-2xl">
-          <div className="text-5xl">🎬</div>
-          <div className="text-center">
-            <h2 className="text-white font-semibold text-lg mb-2">No packs yet</h2>
-            <p className="text-zinc-500 text-sm max-w-xs leading-relaxed">
-              Generate your first pack — paste your video topic and 3 competitor
-              links, and VidUp does the rest.
-            </p>
-          </div>
-          <button className="bg-[#F5C842] text-black font-semibold px-6 py-3 rounded-full text-sm hover:bg-[#f0bc2e] transition-colors mt-2">
-            Generate your first pack
-          </button>
+          <p className="text-zinc-400 text-xs">1 credit per pack · {credits} remaining</p>
         </div>
       </main>
     </div>
