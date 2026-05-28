@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import BuyButton from "./BuyButton";
+import CashfreeScript from "./CashfreeScript";
 
 export const metadata = { title: "Buy Credits — VidUp" };
 
@@ -46,6 +47,8 @@ export default async function CreditsPage() {
   return (
     <div className="p-6 sm:p-8">
       {/* Header */}
+      <CashfreeScript />
+
       <div className="mb-8">
         <h1
           className="text-[24px] font-semibold text-[#111111]"

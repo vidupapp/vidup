@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import SuccessRefresh from "./SuccessRefresh";
 
 export const metadata = { title: "Payment — VidUp" };
 
@@ -18,7 +19,8 @@ export default async function CreditsSuccessPage({
   const { order_id } = await searchParams;
 
   const supabase = await createClient();
-  const admin = createAdminClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const admin = createAdminClient() as any;
 
   const {
     data: { user },
@@ -32,8 +34,7 @@ export default async function CreditsSuccessPage({
   // Verify order with Cashfree
   let orderData: {
     order_status: string;
-    order_note: string; // our transaction_id
-    order_tags: { pack_type: string; credits: string };
+    order_note: string;
   };
 
   try {
@@ -43,14 +44,16 @@ export default async function CreditsSuccessPage({
         "x-client-secret": process.env.CASHFREE_SECRET_KEY!,
         "x-api-version": "2023-08-01",
       },
-      next: { revalidate: 0 },
+      cache: "no-store",
     });
 
-    if (!cfRes.ok) throw new Error(`Cashfree verify failed: ${cfRes.status}`);
+    if (!cfRes.ok) throw new Error(`Cashfree verify: ${cfRes.status}`);
     orderData = await cfRes.json();
   } catch (err) {
     console.error("Cashfree verify error:", err);
-    return <ErrorView message="Could not verify your payment. Please contact support with your order ID." />;
+    return (
+      <ErrorView message="Could not verify your payment. Please contact support with your order ID." />
+    );
   }
 
   if (orderData.order_status !== "PAID") {
@@ -59,63 +62,70 @@ export default async function CreditsSuccessPage({
     );
   }
 
-  // Idempotency: check if this transaction was already processed
   const transactionId = orderData.order_note;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: txn } = await (admin as any)
+
+  // Look up the pending transaction
+  const { data: txn } = await admin
     .from("transactions")
     .select("transaction_id, status, credits_added")
     .eq("transaction_id", transactionId)
     .single() as { data: { transaction_id: string; status: string; credits_added: number } | null; error: unknown };
 
   let creditsAdded = 0;
+  let newBalance = 0;
 
   if (txn && txn.status !== "success") {
     creditsAdded = txn.credits_added;
 
-    // Mark transaction as success
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (admin as any)
-      .from("transactions")
-      .update({ status: "success" })
-      .eq("transaction_id", transactionId);
-
-    // Add credits to user balance
-    const { data: profile } = await supabase
+    // Fetch current balance using admin client (avoids Next.js fetch cache)
+    const { data: profile } = await admin
       .from("users")
       .select("credits_balance")
       .eq("user_id", user.id)
       .single() as { data: { credits_balance: number } | null; error: unknown };
 
     const currentBalance = profile?.credits_balance ?? 0;
+    newBalance = currentBalance + creditsAdded;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (admin as any)
+    // Mark transaction success
+    await admin
+      .from("transactions")
+      .update({ status: "success" })
+      .eq("transaction_id", transactionId);
+
+    // Add credits
+    await admin
       .from("users")
-      .update({ credits_balance: currentBalance + creditsAdded })
+      .update({ credits_balance: newBalance })
       .eq("user_id", user.id);
+
   } else if (txn?.status === "success") {
-    // Already processed — just show success
+    // Already processed — safe to show (idempotent)
     creditsAdded = txn.credits_added;
+
+    const { data: profile } = await admin
+      .from("users")
+      .select("credits_balance")
+      .eq("user_id", user.id)
+      .single() as { data: { credits_balance: number } | null; error: unknown };
+
+    newBalance = profile?.credits_balance ?? 0;
   }
-
-  // Fetch updated balance to show
-  const { data: updatedProfile } = await supabase
-    .from("users")
-    .select("credits_balance")
-    .eq("user_id", user.id)
-    .single() as { data: { credits_balance: number } | null; error: unknown };
-
-  const newBalance = updatedProfile?.credits_balance ?? 0;
 
   return (
     <div className="p-6 sm:p-8 flex items-start">
+      {/* Triggers a client-side router.refresh() so the sidebar balance updates */}
+      <SuccessRefresh />
+
       <div
         className="bg-white rounded-2xl p-10 border border-[#F0F0F0] flex flex-col items-center text-center gap-6 max-w-md w-full"
         style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)" }}
       >
         {/* Icon */}
-        <div className="w-16 h-16 rounded-full bg-[#F0FFF4] flex items-center justify-center text-3xl">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
+          style={{ background: "#F0FFF4", color: "#16A34A" }}
+        >
           ✓
         </div>
 
@@ -144,7 +154,6 @@ export default async function CreditsSuccessPage({
           </span>
         </div>
 
-        {/* CTA */}
         <Link
           href="/dashboard/new"
           className="w-full py-[13px] bg-[#E8192C] text-white text-[15px] font-semibold rounded-lg text-center hover:bg-[#C41523] transition-all"
@@ -170,7 +179,10 @@ function ErrorView({ message }: { message: string }) {
         className="bg-white rounded-2xl p-10 border border-[#F0F0F0] flex flex-col items-center text-center gap-5 max-w-md w-full"
         style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
       >
-        <div className="w-16 h-16 rounded-full bg-[#FFF0F0] flex items-center justify-center text-2xl">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
+          style={{ background: "#FFF0F0", color: "#E8192C" }}
+        >
           ✕
         </div>
         <div>
