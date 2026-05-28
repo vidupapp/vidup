@@ -108,7 +108,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         ) : (
           <>
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-[#E8192C] hover:underline font-medium">
+            <Link href="/login" className="text-[#E8192C] hover:underline font-medium">
               Sign up free
             </Link>
           </>

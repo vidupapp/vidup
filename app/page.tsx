@@ -105,7 +105,7 @@ export default function Home() {
           </nav>
 
           <Link
-            href="/signup"
+            href="/login"
             className="bg-[#E8192C] text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-[#c9151f] transition-colors"
           >
             Get Started Free
@@ -131,7 +131,7 @@ export default function Home() {
         </p>
 
         <Link
-          href="/signup"
+          href="/login"
           className="bg-[#E8192C] text-white font-semibold px-8 py-4 rounded-full text-base hover:bg-[#c9151f] transition-colors"
         >
           Get Started Free →
@@ -296,7 +296,7 @@ export default function Home() {
                 </div>
 
                 <Link
-                  href="/signup"
+                  href="/login"
                   className={`w-full py-3 rounded-full font-semibold text-sm text-center transition-colors mt-auto ${
                     pack.bestValue
                       ? "bg-white text-[#E8192C] hover:bg-zinc-100"
@@ -327,7 +327,7 @@ export default function Home() {
           Join thousands of creators who plan smarter with VidUp.
         </p>
         <Link
-          href="/signup"
+          href="/login"
           className="bg-[#E8192C] text-white font-semibold px-8 py-4 rounded-full text-base hover:bg-[#c9151f] transition-colors"
         >
           Get Started Free →
