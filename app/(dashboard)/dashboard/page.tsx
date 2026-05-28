@@ -9,10 +9,10 @@ export const metadata = {
 
 type Pack = Database["public"]["Tables"]["packs"]["Row"];
 
-const statusStyles: Record<Pack["status"], { bg: string; text: string; border: string }> = {
-  Generated:   { bg: "#F5F5F5",  text: "#3D3D3D",  border: "#E8E8E8"  },
-  "Video Live": { bg: "#FFF0F0", text: "#E8192C",  border: "#E8192C"  },
-  "Results In": { bg: "#F0FFF4", text: "#16A34A",  border: "#16A34A"  },
+const statusStyles: Record<Pack["status"], { bg: string; text: string }> = {
+  Generated:    { bg: "#F5F5F5", text: "#3D3D3D" },
+  "Video Live": { bg: "#FFF0F0", text: "#E8192C" },
+  "Results In": { bg: "#F0FFF4", text: "#16A34A" },
 };
 
 function formatDate(iso: string) {
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
           <div>
             <h2 className="text-[18px] font-semibold text-[#111111] mb-1">No packs yet</h2>
             <p className="text-[14px] text-[#888888] max-w-xs leading-relaxed">
-              Generate your first pack to get titles, a hook script, and thumbnail ideas for your next video.
+              Create your first pack.
             </p>
           </div>
           <Link
@@ -99,19 +99,19 @@ export default async function DashboardPage() {
               <Link
                 key={pack.pack_id}
                 href={`/dashboard/pack/${pack.pack_id}`}
-                className="group bg-white rounded-2xl border border-[#F0F0F0] overflow-hidden flex items-stretch transition-all hover:-translate-y-[2px] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
+                className="group bg-white rounded-2xl border border-[#F0F0F0] overflow-hidden flex items-stretch transition-all duration-[250ms] hover:-translate-y-[2px] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] cursor-pointer"
                 style={{
                   boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                  borderLeft: `3px solid ${s.border}`,
+                  borderLeft: "3px solid #E8192C",
                 }}
               >
                 {/* Main content */}
                 <div className="flex-1 px-5 py-4">
-                  <p className="text-[15px] font-semibold text-[#111111] leading-snug mb-2 group-hover:text-[#E8192C] transition-colors">
+                  <p className="text-[16px] font-semibold text-[#111111] leading-snug mb-2 group-hover:text-[#E8192C] transition-colors">
                     {pack.topic}
                   </p>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[12px] text-[#888888]">{formatDate(pack.created_at)}</span>
+                    <span className="text-[13px] text-[#888888]">{formatDate(pack.created_at)}</span>
                     <span className="text-[#E8E8E8]">·</span>
                     <span className="bg-[#F5F5F5] text-[#3D3D3D] text-[12px] font-medium px-2.5 py-0.5 rounded-full">
                       {pack.language}
