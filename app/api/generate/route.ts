@@ -112,6 +112,9 @@ export async function POST(req: NextRequest) {
 
       const raw = generationMsg.content[0].type === "text" ? generationMsg.content[0].text : "";
       pack = JSON.parse(extractJSON(raw));
+      // Enforce exactly 3 of each regardless of what Claude returned
+      pack.titles = pack.titles.slice(0, 3);
+      pack.thumbnails = pack.thumbnails.slice(0, 3);
     } catch (err) {
       console.error("Generation step failed:", err);
       return NextResponse.json(

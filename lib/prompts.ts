@@ -102,7 +102,12 @@ ${languageRules}
 COMPETITOR ANALYSIS (use this to calibrate the output):
 ${JSON.stringify(analysis, null, 2)}
 
-Generate ONLY a valid JSON object with exactly this structure — no explanation, no markdown, no extra text:
+STRICT RULES:
+→ The "titles" array must contain EXACTLY 3 items. Not 4, not 5. Exactly 3.
+→ The "thumbnails" array must contain EXACTLY 3 items.
+→ Return ONLY valid JSON. No explanation, no markdown, no extra text before or after.
+
+Generate the JSON object now:
 {
   "titles": [
     {
