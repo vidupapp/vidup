@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
@@ -7,6 +8,9 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Never cache this layout — credits must always be fresh
+  noStore();
+
   const supabase = await createClient();
   const {
     data: { user },

@@ -96,13 +96,25 @@ LANGUAGE AUTHENTICITY RULES — ${language.toUpperCase()}:
 
 TOPIC: ${topic}
 VIDEO STYLE: ${style}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 OUTPUT LANGUAGE: ${language}
+This is NON-NEGOTIABLE. Every single word of output — titles, hook script,
+thumbnail text overlays — MUST be in ${language}.
+The competitor videos may be in Hindi, English, or any other language.
+That does NOT matter. You are extracting PATTERNS only (structure, triggers,
+hooks), NOT copying their language.
+Do NOT output anything in Hindi, English, or any language other than ${language}
+unless it falls under the code-switching rules below.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ${languageRules}
 
-COMPETITOR ANALYSIS (use this to calibrate the output):
+COMPETITOR ANALYSIS (patterns to calibrate — language of output is still ${language}):
 ${JSON.stringify(analysis, null, 2)}
 
 STRICT RULES:
+→ OUTPUT LANGUAGE IS ${language}. Not Hindi. Not English. ${language}.
 → The "titles" array must contain EXACTLY 3 items. Not 4, not 5. Exactly 3.
 → The "thumbnails" array must contain EXACTLY 3 items.
 → Return ONLY valid JSON. No explanation, no markdown, no extra text before or after.

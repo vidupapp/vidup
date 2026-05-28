@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
@@ -98,6 +99,9 @@ export default async function CreditsSuccessPage({
       .from("users")
       .update({ credits_balance: newBalance })
       .eq("user_id", user.id);
+
+    // Bust the layout cache so router.refresh() sees fresh credits
+    revalidatePath("/dashboard", "layout");
 
   } else if (txn?.status === "success") {
     // Already processed — safe to show (idempotent)
