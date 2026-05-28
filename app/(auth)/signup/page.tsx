@@ -1,11 +1,17 @@
 import AuthForm from "@/app/components/AuthForm";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Sign up — VidUp",
 };
 
 export default function SignupPage() {
+  // Temporarily disabled on production
+  if (process.env.DISABLE_SIGNUP === "true") {
+    redirect("/login");
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
       {/* Logo */}
