@@ -15,64 +15,43 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  // Fetch credit balance
-  const { data: profile } = await supabase
-    .from("users")
-    .select("credits_balance")
-    .eq("user_id", user.id)
-    .single() as { data: { credits_balance: number } | null; error: unknown };
-
-  const credits = profile?.credits_balance ?? 2;
-
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 sm:px-10 h-16 border-b border-zinc-100">
-        {/* Logo */}
-        <span className="text-xl font-bold tracking-tight text-[#0A0A0A]">
-          vid<span className="text-[#E8192C]">up</span>
-        </span>
+    <div className="p-8">
+      {/* Page header */}
+      <div className="mb-8">
+        <h1
+          className="text-[24px] font-semibold text-[#111111]"
+          style={{ letterSpacing: "-0.5px" }}
+        >
+          Dashboard
+        </h1>
+        <p className="text-[14px] text-[#888888] mt-1">
+          Your generated packs will appear here.
+        </p>
+      </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-4">
-          {/* Credit balance */}
-          <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-full px-4 py-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#E8192C]" />
-            <span className="text-sm font-semibold text-[#0A0A0A]">{credits}</span>
-            <span className="text-sm text-zinc-400">credits</span>
-          </div>
-
-          {/* Sign out */}
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="text-sm text-zinc-400 hover:text-[#0A0A0A] transition-colors"
-            >
-              Sign out
-            </button>
-          </form>
+      {/* Empty state */}
+      <div
+        className="bg-white rounded-2xl p-12 border border-[#F0F0F0] flex flex-col items-center text-center gap-5 max-w-md"
+        style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)" }}
+      >
+        <div className="w-14 h-14 rounded-2xl bg-[#FFF0F0] flex items-center justify-center text-2xl">
+          🎬
         </div>
-      </nav>
-
-      {/* Main — centered New Pack */}
-      <main className="flex-1 flex flex-col items-center justify-center gap-6 px-6">
-        <div className="text-center flex flex-col items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-[#E8192C]/8 flex items-center justify-center">
-            <span className="text-3xl">🎬</span>
-          </div>
-          <div>
-            <h1 className="text-[22px] font-bold text-[#0A0A0A] mb-1">Ready to create?</h1>
-            <p className="text-zinc-500 text-sm max-w-xs leading-relaxed">
-              Generate titles, a hook script, and thumbnail ideas from your competitors in one click.
-            </p>
-          </div>
-          <Link href="/dashboard/new" className="bg-[#E8192C] text-white font-semibold px-8 py-3.5 rounded-full hover:bg-[#c9151f] transition-colors text-sm flex items-center gap-2">
-            <span className="text-base font-bold">+</span>
-            New Pack
-          </Link>
-          <p className="text-zinc-400 text-xs">1 credit per pack · {credits} remaining</p>
+        <div>
+          <h2 className="text-[18px] font-semibold text-[#111111] mb-1">No packs yet</h2>
+          <p className="text-[14px] text-[#888888] max-w-xs leading-relaxed">
+            Generate your first pack to get titles, a hook script, and thumbnail ideas for your next video.
+          </p>
         </div>
-      </main>
+        <Link
+          href="/dashboard/new"
+          className="inline-flex items-center gap-2 bg-[#E8192C] text-white text-[15px] font-semibold px-7 py-3 rounded-lg hover:bg-[#C41523] transition-all"
+        >
+          <span className="text-[16px] font-bold leading-none">+</span>
+          New Pack
+        </Link>
+      </div>
     </div>
   );
 }

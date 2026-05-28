@@ -26,23 +26,14 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${location.origin}/auth/callback`,
-        },
+        options: { emailRedirectTo: `${location.origin}/auth/callback` },
       });
-      if (error) {
-        setError(error.message);
-      } else {
-        setMessage("Check your email for a confirmation link!");
-      }
+      if (error) setError(error.message);
+      else setMessage("Check your email for a confirmation link!");
     } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        setError(error.message);
-      } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) setError(error.message);
+      else {
         router.push("/dashboard");
         router.refresh();
       }
@@ -50,8 +41,11 @@ export default function AuthForm({ mode }: { mode: Mode }) {
     setLoading(false);
   };
 
+  const inputBase =
+    "w-full bg-white border-[1.5px] border-[#E8E8E8] rounded-[10px] px-4 text-[15px] text-[#111111] placeholder-[#AAAAAA] h-[46px] focus:outline-none focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.06)] transition-all";
+
   return (
-    <div className="w-full max-w-sm flex flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <form onSubmit={handleEmailAuth} className="flex flex-col gap-4">
         <input
           type="email"
@@ -59,7 +53,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3.5 text-[#0A0A0A] placeholder-zinc-400 text-sm focus:outline-none focus:border-[#E8192C]/50 focus:bg-white transition-all"
+          className={inputBase}
         />
         <input
           type="password"
@@ -68,16 +62,19 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3.5 text-[#0A0A0A] placeholder-zinc-400 text-sm focus:outline-none focus:border-[#E8192C]/50 focus:bg-white transition-all"
+          className={inputBase}
         />
 
         {error && (
-          <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <p
+            className="text-[#E8192C] text-[14px] bg-[#FFF0F0] border border-[#E8192C]/20 rounded-[10px] px-4 py-3"
+            style={{ boxShadow: "0 0 0 3px rgba(232,25,44,0.06)" }}
+          >
             {error}
           </p>
         )}
         {message && (
-          <p className="text-[#E8192C] text-sm bg-[#E8192C]/5 border border-[#E8192C]/20 rounded-xl px-4 py-3">
+          <p className="text-[#16A34A] text-[14px] bg-[#F0FFF4] border border-[#16A34A]/20 rounded-[10px] px-4 py-3">
             {message}
           </p>
         )}
@@ -85,19 +82,22 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#E8192C] text-white font-semibold py-3.5 rounded-full hover:bg-[#c9151f] transition-colors disabled:opacity-60 text-sm mt-1"
+          className="w-full bg-[#E8192C] text-white text-[15px] font-semibold py-[14px] rounded-[10px] hover:bg-[#C41523] transition-all disabled:opacity-40 flex items-center justify-center gap-2 mt-1"
         >
-          {loading
-            ? mode === "signup"
-              ? "Creating account..."
-              : "Signing in..."
-            : mode === "signup"
-            ? "Create account"
-            : "Sign in"}
+          {loading ? (
+            <>
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              {mode === "signup" ? "Creating account..." : "Signing in..."}
+            </>
+          ) : mode === "signup" ? (
+            "Create account"
+          ) : (
+            "Sign in"
+          )}
         </button>
       </form>
 
-      <p className="text-center text-zinc-500 text-sm">
+      <p className="text-center text-[14px] text-[#888888]">
         {mode === "signup" ? (
           <>
             Already have an account?{" "}
