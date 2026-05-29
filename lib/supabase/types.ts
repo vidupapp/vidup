@@ -38,10 +38,63 @@ export type Database = {
           monthly_reset_date?: string;
         };
       };
+      channels: {
+        Row: {
+          channel_id: string;
+          user_id: string;
+          channel_url: string;
+          youtube_channel_id: string;
+          channel_name: string;
+          subscriber_count: number;
+          total_videos: number;
+          avg_views: number;
+          recent_video_titles: Json;
+          upload_frequency: string;
+          content_category: string | null;
+          target_audience: string[];
+          topic_categories: string[] | null;
+          primary_language: string | null;
+          avatar_url: string | null;
+          last_fetched_at: string;
+          created_at: string;
+        };
+        Insert: {
+          channel_id?: string;
+          user_id: string;
+          channel_url: string;
+          youtube_channel_id: string;
+          channel_name: string;
+          subscriber_count?: number;
+          total_videos?: number;
+          avg_views?: number;
+          recent_video_titles?: Json;
+          upload_frequency?: string;
+          content_category?: string | null;
+          target_audience: string[];
+          topic_categories?: string[] | null;
+          primary_language?: string | null;
+          avatar_url?: string | null;
+          last_fetched_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          subscriber_count?: number;
+          total_videos?: number;
+          avg_views?: number;
+          recent_video_titles?: Json;
+          upload_frequency?: string;
+          content_category?: string | null;
+          topic_categories?: string[] | null;
+          target_audience?: string[];
+          avatar_url?: string | null;
+          last_fetched_at?: string;
+        };
+      };
       packs: {
         Row: {
           pack_id: string;
           user_id: string;
+          channel_id: string | null;
           topic: string;
           style: "Educational" | "Story" | "Opinion" | "Entertainment";
           language: string;
@@ -52,10 +105,14 @@ export type Database = {
           created_at: string;
           credit_used: number;
           status: "Generated" | "Video Live" | "Results In";
+          video_url: string | null;
+          video_submitted_at: string | null;
+          results_fetched_at: string | null;
         };
         Insert: {
           pack_id?: string;
           user_id: string;
+          channel_id?: string | null;
           topic: string;
           style: "Educational" | "Story" | "Opinion" | "Entertainment";
           language: string;
@@ -65,9 +122,15 @@ export type Database = {
           thumbnails: Json[];
           credit_used?: number;
           status?: "Generated" | "Video Live" | "Results In";
+          video_url?: string | null;
+          video_submitted_at?: string | null;
+          results_fetched_at?: string | null;
         };
         Update: {
           status?: "Generated" | "Video Live" | "Results In";
+          video_url?: string | null;
+          video_submitted_at?: string | null;
+          results_fetched_at?: string | null;
         };
       };
       results: {

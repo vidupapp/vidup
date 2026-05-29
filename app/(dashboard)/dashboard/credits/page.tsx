@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Check } from "lucide-react";
 import BuyButton from "./BuyButton";
 import CashfreeScript from "./CashfreeScript";
 
@@ -120,7 +121,7 @@ export default async function CreditsPage() {
                 "Credits never expire",
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-[13px] text-[#3D3D3D]">
-                  <span className="text-[#E8192C] font-bold text-[12px] shrink-0">✓</span>
+                  <Check size={13} strokeWidth={2.5} className="text-[#E8192C] shrink-0" />
                   {f}
                 </li>
               ))}

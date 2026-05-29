@@ -8,7 +8,7 @@
 
 VidUp is a web-based SaaS tool for YouTube creators that generates a complete pre-production pack in one click — 3 title options, 1 hook script, and 3 thumbnail ideas — based on real competitor video analysis.
 
-The tool gets smarter over time by collecting performance data (views, CTR, AVD) from creators after 30 days and using it to improve future generations for all users anonymously.
+The tool gets smarter over time by silently collecting video performance data from creators after 7 days and using it to improve future generations anonymously.
 
 **Tagline:** One click. Viral ready.
 
@@ -54,9 +54,9 @@ Four fields:
 - Punjabi
 - English
 
-**Language Rule:** Output language auto-matches selected language. Analysis, titles, hook script, and thumbnail text all generated in the creator's chosen language. For Indian languages, use natural code-switching (Hinglish style) — never formal/bookish language.
+**Language Rule:** Output language auto-matches selected language. For Indian languages, natural code-switching rules are injected per language from `lib/prompts.ts` (LANGUAGE_RULES map). Full rules for all 10 languages live in `VIDUP_LANGUAGE_PROMPTS.md`.
 
-**Important:** Competitor videos can be in any language (e.g. user selects Marathi but pastes Hindi links). The competitor analysis is for PATTERN extraction only — the output language is always the selected language, not the language of the competitor videos. This is enforced with a hard rule at the top of the generation prompt.
+**Important:** Competitor videos can be in any language. The competitor analysis is for PATTERN extraction only — the output language is always the selected language. Enforced with a hard rule at the top of the generation prompt.
 
 ---
 
@@ -66,106 +66,141 @@ Four fields:
 Each title includes:
 - Title text in selected language
 - Type label (Curiosity Gap / Emotional Trigger / SEO Optimised / Story / Controversial)
-- Why it works (1 line explanation)
+- Why it works (1 line)
 - Click score (out of 10)
 
 ### Hook Script (1 option)
-- Opening line (must stop scroll)
-- Tension builder (3-4 sentences)
+- Opening line (max 15 words, must create immediate tension)
+- Tension builder (2-3 sentences)
 - Payoff promise (what viewer will get)
 - Full script (30-45 seconds, paste-ready)
 - Psychological trigger used
 
+Hook must NOT start with: "In this video...", "Today we are going to...", "Welcome back...", "Hi everyone..."
+Must start with: shocking statement, specific number, direct question, or personal story moment.
+
 ### Thumbnail Concepts (3 options)
 Each concept includes:
-- Visual layout description
-- Emotion on face (if person shown)
-- Text overlay (max 3 words)
-- Color mood (specific colors and why)
+- Layout (one line visual arrangement)
+- Face emotion (exact emotion if person shown, or "No face needed")
+- Text overlay (max 3 words in selected language) — displayed as large bold preview on dark background
+- Color mood (specific colors + why)
 - Why it works (psychological reason)
-- Specific enough to execute on Canva without guesswork
+- Canva URL (search link to closest Canva template) — "Open in Canva" button on output page
 
 ---
 
 ## AI Architecture — 2 API Calls Per Generation
 
-### Call 1 — Analysis (YouTube competitor data)
+### Call 1 — Analysis
 **Model:** claude-haiku-4-5-20251001
-**Input:** Metadata from 3 YouTube links (title, views, description, like count, comment count, publish date, channel name)
-**Output:** JSON object containing:
-```json
-{
-  "title_patterns": [],
-  "emotional_triggers": [],
-  "content_gaps": [],
-  "audience_level": "",
-  "niche_language": [],
-  "thumbnail_patterns": [],
-  "hook_style": "",
-  "what_is_working": ""
-}
+**Max tokens:** 2048
+**Role:** "YouTube growth strategist who has studied 10,000 viral videos"
+**Input:** Metadata from 3 YouTube links
+**Output JSON fields:**
+```
+title_patterns, emotional_triggers, content_gaps, audience_level,
+niche_language, thumbnail_patterns, hook_style, what_is_working,
+title_formula, performance_ratio, dominant_trigger,
+content_gap_specific, thumbnail_formula, best_performing_title
 ```
 
 ### Call 2 — Generation
 **Model:** claude-haiku-4-5-20251001
-**Input:** Topic + style + language + analysis JSON
-**Output:** Full pack JSON (titles + hook + thumbnails)
-
-### Critical Language Rules (in prompt)
-```
-Hard rule at top of generation prompt:
-OUTPUT LANGUAGE: [language] — NON-NEGOTIABLE
-Competitor videos may be in any language — patterns only, never copy their language.
-All output must be in the selected language.
-
-LANGUAGE AUTHENTICITY RULES FOR INDIAN LANGUAGES:
-→ Never use formal/bookish vocabulary
-→ Use natural code-switching — mix English words the way creators actually speak
-→ English words always kept in English: save, invest, business, tips, results,
-   secret, hack, mistake, challenge, score, job, salary, budget, plan, fail, win
-→ Regional words for emotions and connecting language
-→ Think like a 25 year old creator from Mumbai/Pune, not a Hindi textbook
-→ Titles should feel like WhatsApp messages, not newspaper headlines
-→ Test: would a real creator say this out loud? If not — rewrite it
-```
+**Max tokens:** 4096
+**Role:** "YouTube content strategist who has grown 50 channels past 100K subscribers. Specialises in [LANGUAGE] content for [CATEGORY] creators."
+**Prompt includes:**
+- Language-specific rules (full per-language rules for all 10 languages, hardcoded in `lib/prompts.ts`)
+- Channel context block (name, subscribers, avg views, category, audience, recent titles)
+- Competitor analysis JSON from Call 1
+- Title quality gate (5-point test: specific, curiosity/benefit, real creator would use, under 70 chars, uses dominant_trigger)
+- Hook "must NOT start with" / "must start with" rules
+- Quality gate at end of prompt (self-review before returning)
 
 ### Prompt Storage
-Prompts are currently hardcoded in `lib/prompts.ts` (not yet in Supabase). The functions are `buildAnalysisPrompt()` and `buildGenerationPrompt()`. Moving to Supabase-stored prompts is a future task — the architecture supports it.
+Hardcoded in `lib/prompts.ts`. Functions: `buildAnalysisPrompt()` and `buildGenerationPrompt()`. Full language rules in `VIDUP_LANGUAGE_PROMPTS.md`. Moving to Supabase-stored prompts is Month 3.
 
 ### API Safety
-- Title count enforced at prompt level AND sliced to 3 in the API route as a hard safety net
+- Title count enforced at prompt level AND sliced to 3 in the API route
 - Thumbnail count enforced the same way
 
 ---
 
-## The Learning Engine
+## Channel System
 
 ### How It Works
-Every generation and result is stored. After 30 days:
-- User pastes their live YouTube video link
-- YouTube Data API automatically pulls: views, CTR, average view duration, like count, comment count
-- Data stored against the original pack
-- Feeds two layers:
+- User adds up to 2 YouTube channels
+- Channel data is auto-fetched from YouTube API on add (no manual dropdowns)
+- Channel context is injected into every pack generation
+- Selected channel stored in `vidup_channel` httpOnly cookie (1 year)
 
-**Layer 1 — User Personal Layer**
-- Their own history of what works
-- After 5+ results: personalized insights appear on dashboard
-- Example: "In your niche, opinion-style titles average 2x higher CTR than list titles"
+### Add Channel Form — 2 Fields Only
+1. **YouTube Channel URL** — validated in real-time (green/red border)
+2. **Target Audience** — multi-select pills, max 3, 10 options with age ranges
 
-**Layer 2 — Global Anonymous Layer**
-- Aggregated across all users
-- No personal data visible to anyone
-- Feeds back into generation engine
-- Improves output for everyone silently
+Everything else auto-fetched from YouTube:
+- Channel name, subscriber count, total videos, avg views
+- Content category (from YouTube's `topicDetails.topicCategories` → Wikipedia URL → human-readable name)
+- Upload frequency (calculated from publish dates of last 10 videos)
+- Avatar URL (channel thumbnail)
 
-### 30-Day Result Collection Flow
-- 30 days after pack generation → status tag changes color on history card (visual nudge only, no email)
-- Banner appears on pack card: "Your video should be live by now. Paste your YouTube link to see how it performed."
-- User pastes YouTube link → API pulls all data automatically
-- User sees performance snapshot vs similar videos in niche
-- Status updates to "Results In"
+### Auto-Refresh
+Every visit to `/dashboard/channels` silently refreshes any channel whose `last_fetched_at` is older than 7 days. Fire-and-forget, user never sees it.
 
-**Not yet built — Month 3 item.**
+### Channel Card
+Shows: avatar (48px circle, initial fallback), channel name, content category badge, upload frequency badge, audience pills, stats row (subscribers / avg views / videos), last fetched / added dates.
+Actions: Select, Edit (pencil), Delete (trash with confirmation dialog).
+
+### Edit Channel
+Only target_audience is editable. Channel URL is locked forever. Everything else auto-refreshes from YouTube.
+
+### Target Audience Options
+```
+Students (School) — 10-16 years
+Students (College) — 17-22 years
+Young Professionals — 22-30 years
+Working Professionals — 30-45 years
+Entrepreneurs — any age
+Parents — 28-45 years
+Homemakers — 25-50 years
+Senior Professionals — 45+
+General Audience — all ages
+Kids — under 12
+```
+
+---
+
+## Learning Engine
+
+### How It Works (7-day flow — LIVE)
+1. User generates a pack → status: **Generated**
+2. User uploads video → clicks "Help VidUp learn →" on pack page
+3. Modal: "Make your next pack smarter" — user pastes YouTube video URL
+4. `POST /api/packs/mark-used` saves `video_url`, `video_submitted_at`, flips status to **Video Live**
+5. Vercel cron runs daily at 06:00 UTC → `GET /api/fetch-results`
+6. Finds packs where: `status = Video Live AND video_submitted_at <= now() - 7 days AND results_fetched_at IS NULL`
+7. Fetches YouTube stats (views, likes, comments) for each video
+8. Saves to `results` table, updates pack to **Results In**, sets `results_fetched_at`
+9. Performance data **never shown to user** — stored internally for learning engine only
+
+### Social Proof Sentences (on pack output page)
+Two conditions based on platform total pack count (`total_packs`):
+
+**total_packs < 50 (personal-only messaging):**
+- N=0, first pack: "Your first pack is ready — add your video link after uploading and VidUp will make the next one more accurate for you."
+- N=0, not first: "Pack generated using your [channel] data — add your video link after uploading so VidUp can learn what works for your audience."
+- N=1–4: "Generated using your channel data and [N] of your real videos — your packs are getting more accurate every time."
+- N=5–9: "[N] of your videos have trained this pack — VidUp is learning what your [subscribers] [language] audience responds to."
+- N=10+: "Built from [N] of your real videos — this pack reflects what your audience actually clicks and watches."
+
+**total_packs >= 50 (blend personal + platform data):**
+- N=0, first pack: "Your first pack is ready — generated using patterns from [total]+ packs on VidUp. Add your video link after uploading to make yours even more personalised."
+- N=0, not first: "Pack generated using your [channel] data and patterns from [total] packs across VidUp — add your video link after uploading so VidUp can learn what works specifically for your audience."
+- N=1–4: "Generated using [N] of your real videos and patterns from [total] packs on VidUp — getting more accurate every time."
+- N=5–9: "[N] of your videos have trained this pack alongside [total] packs across VidUp — VidUp knows what your [subscribers] [language] audience responds to."
+- N=10+: "Built from [N] of your real videos — this pack reflects what your audience actually clicks and watches."
+
+N = count of results this user has submitted. Fetched in parallel with userPackCount and totalPacks on the server.
 
 ---
 
@@ -184,15 +219,12 @@ Every generation and result is stored. After 30 days:
 - Free credits reset monthly on signup anniversary date (per-user, not global reset)
 - Purchased credits never expire
 - Credits stack if multiple packs purchased
-- Referral credits never expire
 
 ### Referral Program
 - Every user gets a unique referral link on dashboard
 - Reward triggers ONLY on first purchase (not signup)
 - Referrer gets 5 credits when friend buys any paid pack
 - Friend gets 5 credits added to their account
-- Total cost per referral = 10 credits = ~₹15 at Haiku API rates
-- Still profitable on every referred sale
 
 **Not yet built — Month 3 item.**
 
@@ -218,12 +250,13 @@ Every generation and result is stored. After 30 days:
 
 ```
 1. Sign up → 2 free credits added automatically
-2. Click "New Pack" → fill 4-field form → click Generate → 1 credit deducted
-3. System: YouTube API pulls competitor metadata → Claude analyzes → Claude generates
-4. Output displayed → pack auto-saved to history → status: "Generated"
-5. 30 days later → banner on pack card → user pastes YouTube link (NOT YET BUILT)
-6. API pulls performance data → stored → status: "Results In" (NOT YET BUILT)
-7. When credits run low → Buy Credits → Cashfree → credits added instantly
+2. Add YouTube channel → VidUp fetches all channel data from YouTube API
+3. Click "New Pack" → fill 4-field form → click Generate → 1 credit deducted
+4. System: YouTube API pulls competitor metadata → Claude Call 1 (analysis) → Claude Call 2 (generation)
+5. Output displayed → pack auto-saved to history → status: "Generated"
+6. User uploads video → clicks "Help VidUp learn →" → pastes video URL
+7. 7 days later → Vercel cron fetches YouTube stats → status: "Results In" (internal only)
+8. When credits run low → Buy Credits → Cashfree → credits added instantly
 ```
 
 ---
@@ -266,10 +299,22 @@ referred_by, created_at
 
 **PACKS**
 ```
-pack_id, user_id, topic, style, language,
-links[3], titles[3], hook, thumbnails[3],
-created_at, credit_used, status
+pack_id, user_id, channel_id (FK → channels),
+topic, style, language, links[3], titles[3], hook, thumbnails[3],
+created_at, credit_used, status,
+video_url, video_submitted_at, results_fetched_at
 ```
+Status values: `Generated` → `Video Live` → `Results In`
+
+**CHANNELS**
+```
+channel_id, user_id, channel_url, youtube_channel_id,
+channel_name, subscriber_count, total_videos, avg_views,
+recent_video_titles (jsonb), upload_frequency, content_category,
+target_audience (jsonb — string array), avatar_url,
+primary_language, last_fetched_at, created_at
+```
+Max 2 channels per user enforced by DB trigger.
 
 **RESULTS**
 ```
@@ -277,14 +322,16 @@ result_id, pack_id, user_id, youtube_link,
 views_30d, ctr, avg_view_duration, like_count,
 comment_count, submitted_at
 ```
+CTR and AVD not available via YouTube API — only views, likes, comments populated.
+Data internal only — never surfaced to creator.
 
-**LEARNING_DATA** (aggregated, anonymous)
+**LEARNING_DATA** (aggregated, anonymous — not yet built)
 ```
 niche, style, language, title_type, avg_ctr,
 avg_avd, sample_size, updated_at
 ```
 
-**PROMPTS**
+**PROMPTS** (not yet used — Month 3)
 ```
 prompt_id, language, call_type (analysis/generation),
 prompt_text, version, updated_at
@@ -302,44 +349,66 @@ credits_added, payment_gateway, status, created_at
 
 ```
 app/
-  page.tsx                          → Landing page
-  layout.tsx                        → Root layout (Inter font)
-  globals.css                       → Global styles, animations
+  page.tsx                              → Landing page
+  layout.tsx                            → Root layout (Inter font)
+  globals.css                           → Global styles, animations
   (auth)/
-    login/page.tsx                  → Login page
-    signup/page.tsx                 → Redirects to login
+    login/page.tsx                      → Login page
+    signup/page.tsx                     → Redirects to login
   (dashboard)/
-    layout.tsx                      → Sidebar layout wrapper (fetches credits)
-    DashboardSidebar.tsx            → Sidebar client component (active states)
+    layout.tsx                          → Sidebar layout wrapper (fetches credits + selected channel)
+    DashboardSidebar.tsx                → Sidebar client component (Lucide icons, active states)
     dashboard/
-      page.tsx                      → Dashboard + pack history list
+      page.tsx                          → Dashboard + pack history list
       new/
-        page.tsx                    → New Pack page (credit check)
-        NewPackForm.tsx             → Generation form + API call + loading overlay
+        page.tsx                        → New Pack page (credit check, channel check)
+        NewPackForm.tsx                 → Generation form + API call + loading overlay
       pack/[id]/
-        page.tsx                    → Output page (titles, hook, thumbnails)
-        CopyButton.tsx              → Copy to clipboard client component
+        page.tsx                        → Output page (titles, hook, thumbnails, social proof)
+        CopyButton.tsx                  → Copy to clipboard client component
+        MarkAsUsedButton.tsx            → "Help VidUp learn →" flow (modal + submission states)
       credits/
-        page.tsx                    → Buy credits (3 pack cards)
-        BuyButton.tsx               → Cashfree checkout client component
-        CashfreeScript.tsx          → Loads Cashfree SDK once at page level
+        page.tsx                        → Buy credits (3 pack cards)
+        BuyButton.tsx                   → Cashfree checkout client component
+        CashfreeScript.tsx              → Loads Cashfree SDK once at page level
         success/
-          page.tsx                  → Payment verification + credit addition
-          SuccessRefresh.tsx        → router.refresh() after 800ms delay
+          page.tsx                      → Payment verification + credit addition
+          SuccessRefresh.tsx            → router.refresh() after 800ms delay
+      channels/
+        page.tsx                        → Channel list (silent 7-day auto-refresh)
+        ChannelCard.tsx                 → Client component: avatar, edit, delete dialog
+        new/
+          page.tsx                      → Add channel page
+          AddChannelForm.tsx            → 2-field form: URL (live validation) + audience pills
+        edit/[id]/
+          page.tsx                      → Edit channel page
+          EditChannelForm.tsx           → Locked URL + editable audience pills
   api/
-    generate/route.ts               → Full generation pipeline
+    generate/route.ts                   → Full generation pipeline (2 Claude calls)
     payment/
-      create-order/route.ts         → Creates Cashfree order + pending transaction
+      create-order/route.ts             → Creates Cashfree order + pending transaction
+    channels/
+      add/route.ts                      → Auth + YouTube fetch + DB insert
+      delete/route.ts                   → Delete channel + associated packs
+      refresh/route.ts                  → Silent background refresh of channel data
+      update/route.ts                   → Update target_audience
+    packs/
+      mark-used/route.ts                → Save video_url, flip to Video Live
+    fetch-results/route.ts              → Daily cron: fetch YouTube stats, flip to Results In
   components/
-    AuthForm.tsx                    → Email/password auth form
+    AuthForm.tsx                        → Email/password auth form
 lib/
-  youtube.ts                        → Video ID extraction + YouTube Data API v3
-  prompts.ts                        → Analysis + generation prompt builders
+  youtube.ts                            → Video + channel data from YouTube Data API v3
+                                          Includes: fetchChannelData (topicDetails, uploadFrequency)
+  prompts.ts                            → Analysis + generation prompt builders
+                                          LANGUAGE_RULES map (all 10 languages, full rules)
   supabase/
-    server.ts                       → Cookie-based server client
-    client.ts                       → Browser client
-    admin.ts                        → Service role client (bypasses RLS)
-    types.ts                        → Generated DB types
+    server.ts                           → Cookie-based server client
+    client.ts                           → Browser client
+    admin.ts                            → Service role client (bypasses RLS)
+    types.ts                            → DB types (manually maintained)
+vercel.json                             → Cron: GET /api/fetch-results at 06:00 UTC daily
+VIDUP_LANGUAGE_PROMPTS.md               → Full per-language prompt rules (reference doc)
 ```
 
 ---
@@ -355,6 +424,7 @@ lib/
 | Payments | Cashfree | Live, credentials in Vercel env vars |
 | Email | Resend | vidup.in domain connected |
 | Hosting | Vercel | Hobby plan |
+| Icons | Lucide React | 100% throughout app — no emojis |
 | Version Control | GitHub | github.com/vidupapp/vidup |
 
 ---
@@ -371,6 +441,7 @@ CASHFREE_APP_ID
 CASHFREE_SECRET_KEY
 NEXT_PUBLIC_CASHFREE_ENV=production
 RESEND_API_KEY
+CRON_SECRET                             → Vercel cron authorization header
 ```
 
 ---
@@ -382,7 +453,7 @@ RESEND_API_KEY
 | Domain | ✅ Live | vidup.in on Hostinger |
 | Professional email | ✅ Live | connect@vidup.in on Hostinger |
 | GitHub | ✅ Live | github.com/vidupapp |
-| Vercel | ✅ Live | Connected to GitHub, auto-deploy |
+| Vercel | ✅ Live | Connected to GitHub, auto-deploy, cron configured |
 | Supabase | ✅ Live | Project: vidup, all tables + RLS in place |
 | Anthropic Console | ✅ Live | Credits added, key in Vercel |
 | Google Cloud | ✅ Live | YouTube Data API v3 enabled |
@@ -432,10 +503,19 @@ Only merge to main when tested and ready.
 - [x] Cashfree payment integration (create order, verify, idempotent credit add)
 - [x] Credit purchase flow (/dashboard/credits with 3 pack cards)
 
-### Month 3 — Learning Engine + Launch ⏳ Next
-- [ ] 30-day result collection system (banner on pack card after 30 days)
-- [ ] YouTube API result pull (views, CTR, AVD on paste)
-- [ ] Learning data aggregation (anonymous, feeds generation)
+### Month 2.5 — Channel System + Generation v2 + Learning Engine ✅ Complete (2026-05-30)
+- [x] Channel system: add/edit/delete, up to 2 channels per user
+- [x] YouTube auto-fetch: category, frequency, avatar, subscriber count, avg views
+- [x] Channel context injected into every generation
+- [x] Generation pipeline v2: new role, 6 new analysis fields, per-language rules, quality gates
+- [x] Thumbnail improvements: face_emotion, why_it_works, Canva URL
+- [x] Lucide React icons throughout entire app (no emojis anywhere)
+- [x] "Help VidUp learn →" flow: 7-day result collection (internal only, never shown to user)
+- [x] Vercel cron job: daily fetch-results at 06:00 UTC
+- [x] Social proof sentences: 5 states × 2 conditions (personal vs platform blended)
+
+### Month 3 — Growth + Launch ⏳ Next
+- [ ] Learning data aggregation (anonymous, feeds generation engine)
 - [ ] Dashboard insights (after 5+ results: personal performance patterns)
 - [ ] Referral program (unique links, 5 credits each side)
 - [ ] Landing page SEO (meta, og images, structured data)
@@ -454,20 +534,24 @@ Only merge to main when tested and ready.
 | Subscription vs Credits | Credit packs | Lower commitment barrier for new users |
 | Credit expiry | Paid never expire, free resets monthly | Fairness + breakage benefit |
 | Free tier | 2 credits/month | Enough to experience, protects margins |
-| Result collection | YouTube link paste (not form) | Less friction, API pulls data automatically |
+| Result collection timing | 7 days (not 30) | Faster feedback loop, more actionable |
+| Performance data visibility | Internal only, never shown to creator | Framed as "learning" not "tracking" — less pressure on creator |
+| Channel form fields | 2 only (URL + audience) | Everything else auto-fetched from YouTube — less friction |
+| YouTube categories | Use YouTube's own as-is | No mapping needed, always accurate |
+| Upload frequency | Auto-calculated from last 10 video dates | More accurate than user self-reporting |
 | Result incentive | No credit reward | Value comes from better output, not bribe |
 | Referral reward | 5 credits each (referrer + friend) | Both sides happy, cost controlled |
 | AI model | Claude Haiku 4.5 | Best Indian language output, 81% margin |
 | Prompt storage | Hardcoded in lib/prompts.ts for now | Ship faster; Supabase migration is Month 3 |
-| Hindi style | Hinglish (natural code-switching) | How creators actually speak |
+| Language rules | Full per-language rules in LANGUAGE_RULES map | Prevents Marathi/Hindi leakage, Tamil formality issues etc. |
+| Icons | 100% Lucide React, zero emojis | Consistent, professional, scalable |
 | Payment gateway | Cashfree (primary) | Already verified account |
 | Staging setup | Separate Vercel preview branch | Professional workflow |
-| WordPress | Rejected | Wrong architecture for SaaS |
-| Language enforcement | Hard rule at top of generation prompt | Competitor video language was overriding selected language |
 | Cashfree SDK loading | Page-level Script, not per-button | Per-button caused onReady to only fire on first instance |
 | Credit balance caching | noStore() + revalidatePath + 800ms delay | Three-layer fix needed for reliable instant update |
 | Admin client | Service role Supabase client | RLS has no INSERT policy on transactions; admin needed post-payment |
 | Customer phone (Cashfree) | Placeholder 9999999999 | Cashfree requires it; collect real number in future |
+| CRON_SECRET | Vercel env var, checked in fetch-results route | Prevents unauthorized triggering of cron job |
 
 ---
 
@@ -501,4 +585,4 @@ Go to Google Cloud Console → Vidup YT data extractor API key → change Applic
 
 ---
 
-*Last updated: 2026-05-29 — Full product live. Month 1 + Month 2 complete. Generation pipeline, payment flow, history, output page all working. Month 3 (learning engine, referrals, SEO) is next.*
+*Last updated: 2026-05-30 — Channel system, generation pipeline v2, learning engine (7-day), social proof sentences, full Lucide icon audit all complete. Month 2.5 done. Month 3 (learning aggregation, referrals, SEO, launch) is next.*
