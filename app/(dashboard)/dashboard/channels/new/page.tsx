@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import AddChannelForm from "./AddChannelForm";
@@ -7,10 +8,12 @@ export const metadata = { title: "Add Channel — VidUp" };
 
 export default async function AddChannelPage() {
   const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const admin = createAdminClient() as any;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: channels } = await supabase
+  const { data: channels } = await admin
     .from("channels")
     .select("channel_id")
     .eq("user_id", user.id) as { data: { channel_id: string }[] | null; error: unknown };

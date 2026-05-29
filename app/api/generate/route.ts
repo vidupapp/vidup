@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import Anthropic from "@anthropic-ai/sdk";
 import { extractVideoId, fetchVideoMetadata } from "@/lib/youtube";
 import {
@@ -19,6 +20,8 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = supabase as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const admin = createAdminClient() as any;
 
     // Auth
     const {
@@ -51,10 +54,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No credits remaining." }, { status: 402 });
     }
 
-    // Fetch channel context if provided
+    // Fetch channel context if provided — use admin client to bypass schema cache
     let channelContext: ChannelContext | undefined;
     if (channel_id) {
-      const { data: ch } = await db
+      const { data: ch } = await admin
         .from("channels")
         .select("channel_name, subscriber_count, avg_views, content_category, target_audience, upload_frequency, recent_video_titles")
         .eq("channel_id", channel_id)

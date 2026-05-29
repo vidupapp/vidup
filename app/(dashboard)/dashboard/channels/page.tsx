@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { selectChannelAction } from "@/app/actions/channel";
@@ -22,10 +23,12 @@ function formatDate(iso: string) {
 
 export default async function ChannelsPage() {
   const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const admin = createAdminClient() as any;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: channels } = await supabase
+  const { data: channels } = await admin
     .from("channels")
     .select("*")
     .eq("user_id", user.id)

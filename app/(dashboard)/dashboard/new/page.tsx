@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import NewPackForm from "./NewPackForm";
@@ -8,6 +9,8 @@ export const metadata = { title: "New Pack — VidUp" };
 
 export default async function NewPackPage() {
   const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const admin = createAdminClient() as any;
   const cookieStore = await cookies();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -31,7 +34,7 @@ export default async function NewPackPage() {
   } | null = null;
 
   if (selectedChannelId) {
-    const { data: ch } = await supabase
+    const { data: ch } = await admin
       .from("channels")
       .select("channel_id, channel_name, content_category, target_audience")
       .eq("channel_id", selectedChannelId)
@@ -49,7 +52,7 @@ export default async function NewPackPage() {
   }
 
   // Check if user has any channels at all
-  const { data: channels } = await supabase
+  const { data: channels } = await admin
     .from("channels")
     .select("channel_id")
     .eq("user_id", user.id) as { data: { channel_id: string }[] | null; error: unknown };

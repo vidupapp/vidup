@@ -1,6 +1,7 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
 
@@ -28,12 +29,14 @@ export default async function DashboardLayout({
 
   const credits = profile?.credits_balance ?? 2;
 
-  // Selected channel from cookie
+  // Selected channel from cookie — admin client avoids PostgREST schema cache issues
   const selectedChannelId = cookieStore.get("vidup_channel")?.value ?? null;
   let selectedChannel: { channel_id: string; channel_name: string } | null = null;
 
   if (selectedChannelId) {
-    const { data: ch } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const admin = createAdminClient() as any;
+    const { data: ch } = await admin
       .from("channels")
       .select("channel_id, channel_name")
       .eq("channel_id", selectedChannelId)
