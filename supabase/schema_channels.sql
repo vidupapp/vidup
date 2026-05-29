@@ -62,6 +62,44 @@ create policy "Users can delete own channels"
 -- Index
 create index if not exists idx_channels_user_id on public.channels(user_id);
 
+-- ── ADD avatar_url TO CHANNELS ───────────────────────────────
+alter table public.channels
+  add column if not exists avatar_url text;
+
+-- ── CHANNEL SYSTEM v2 MIGRATIONS ─────────────────────────────
+
+-- Add topic_categories (raw YouTube topicCategories URLs)
+alter table public.channels
+  add column if not exists topic_categories jsonb default '[]';
+
+-- Convert target_audience from TEXT to JSONB array
+-- Existing plain-string values (e.g. "General") become ["General"]
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'channels'
+      and column_name = 'target_audience'
+      and data_type = 'text'
+  ) then
+    alter table public.channels
+      alter column target_audience type jsonb
+      using case
+        when target_audience is null then '[]'::jsonb
+        when target_audience like '[%' then target_audience::jsonb
+        else jsonb_build_array(target_audience)
+      end;
+  end if;
+end $$;
+
+-- Make content_category and upload_frequency nullable (now auto-fetched)
+alter table public.channels
+  alter column content_category drop not null;
+
+alter table public.channels
+  alter column upload_frequency drop not null;
+
 -- ── ADD channel_id TO PACKS (scope packs per channel) ────────
 alter table public.packs
   add column if not exists channel_id uuid references public.channels(channel_id) on delete set null;

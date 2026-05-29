@@ -2,12 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Sparkles,
+  Tv2,
+  Zap,
+  LogOut,
+  ArrowLeftRight,
+} from "lucide-react";
 
 const navItems = [
-  { href: "/dashboard",         label: "Dashboard",   icon: "⊞" },
-  { href: "/dashboard/new",     label: "New Pack",    icon: "+" },
-  { href: "/dashboard/channels",label: "Channels",    icon: "📺" },
-  { href: "/dashboard/credits", label: "Buy Credits", icon: "⚡" },
+  { href: "/dashboard",          label: "Dashboard",   Icon: LayoutDashboard },
+  { href: "/dashboard/new",      label: "New Pack",    Icon: Sparkles },
+  { href: "/dashboard/channels", label: "Channels",    Icon: Tv2 },
+  { href: "/dashboard/credits",  label: "Buy Credits", Icon: Zap },
 ];
 
 interface Props {
@@ -40,10 +48,10 @@ export default function DashboardSidebar({ credits, selectedChannel }: Props) {
             </span>
             <Link
               href="/dashboard/channels"
-              className="text-[11px] font-bold text-[#E8192C] hover:underline whitespace-nowrap shrink-0"
+              className="text-[#E8192C] hover:text-[#C41523] transition-colors shrink-0"
               title="Switch channel"
             >
-              ↔
+              <ArrowLeftRight size={14} strokeWidth={2.5} />
             </Link>
           </div>
         </div>
@@ -53,7 +61,7 @@ export default function DashboardSidebar({ credits, selectedChannel }: Props) {
             href="/dashboard/channels"
             className="flex items-center gap-2 bg-[#FFF0F0] text-[#E8192C] text-[13px] font-semibold px-3 py-2.5 rounded-xl hover:bg-[#ffe0e3] transition-colors"
           >
-            <span>📺</span>
+            <Tv2 size={15} strokeWidth={2} />
             Select a channel
           </Link>
         </div>
@@ -63,7 +71,8 @@ export default function DashboardSidebar({ credits, selectedChannel }: Props) {
       <div className="px-2 mb-6">
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center gap-1.5 bg-[#FFF0F0] text-[#E8192C] text-[13px] font-bold px-3 py-1.5 rounded-full">
-            ⚡ {credits} credits
+            <Zap size={13} strokeWidth={2.5} />
+            {credits} credits
           </div>
           {credits <= 2 && (
             <Link
@@ -78,24 +87,24 @@ export default function DashboardSidebar({ credits, selectedChannel }: Props) {
 
       {/* Nav */}
       <nav className="flex flex-col gap-1 flex-1">
-        {navItems.map((item) => {
+        {navItems.map(({ href, label, Icon }) => {
           const isActive =
-            item.href === "/dashboard"
+            href === "/dashboard"
               ? pathname === "/dashboard"
-              : pathname.startsWith(item.href);
+              : pathname.startsWith(href);
 
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={href}
+              href={href}
               className={`flex items-center gap-3 px-[14px] py-[10px] rounded-[10px] text-[14px] transition-all ${
                 isActive
                   ? "bg-[#FFF0F0] text-[#E8192C] font-semibold"
                   : "text-[#3D3D3D] font-medium hover:bg-[#F5F5F5] hover:text-[#111111]"
               }`}
             >
-              <span className="text-[17px] leading-none">{item.icon}</span>
-              {item.label}
+              <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+              {label}
             </Link>
           );
         })}
@@ -107,7 +116,7 @@ export default function DashboardSidebar({ credits, selectedChannel }: Props) {
           type="submit"
           className="w-full text-left flex items-center gap-3 px-[14px] py-[10px] rounded-[10px] text-[14px] font-medium text-[#888888] hover:text-[#111111] hover:bg-[#F5F5F5] transition-all"
         >
-          <span className="text-[16px] leading-none">↗</span>
+          <LogOut size={18} strokeWidth={2} />
           Sign out
         </button>
       </form>

@@ -2,38 +2,67 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 
-const CATEGORIES = [
-  "Education", "Entertainment", "Finance", "Tech",
-  "Lifestyle", "Gaming", "Food", "Other",
+export const AUDIENCES = [
+  "Students (School) — 10-16 years",
+  "Students (College) — 17-22 years",
+  "Young Professionals — 22-30 years",
+  "Working Professionals — 30-45 years",
+  "Entrepreneurs — any age",
+  "Parents — 28-45 years",
+  "Homemakers — 25-50 years",
+  "Senior Professionals — 45+",
+  "General Audience — all ages",
+  "Kids — under 12",
 ];
 
-const AUDIENCES = [
-  "Students", "Working professionals", "Parents", "General", "Kids",
-];
-
-const FREQUENCIES = [
-  "Daily", "2-3x week", "Weekly", "Bi-weekly", "Monthly",
-];
+function validateYouTubeUrl(url: string): "empty" | "valid" | "invalid" {
+  if (!url.trim()) return "empty";
+  try {
+    const u = new URL(url.trim());
+    const isYT = u.hostname.includes("youtube.com") || u.hostname === "youtu.be";
+    if (!isYT) return "invalid";
+    const path = u.pathname;
+    const valid =
+      path.startsWith("/@") ||
+      path.startsWith("/channel/") ||
+      path.startsWith("/c/") ||
+      path.startsWith("/user/") ||
+      u.hostname === "youtu.be";
+    return valid ? "valid" : "invalid";
+  } catch {
+    return url.trim().length > 3 ? "invalid" : "empty";
+  }
+}
 
 export default function AddChannelForm({ channelCount }: { channelCount: number }) {
   const router = useRouter();
   const [channelUrl, setChannelUrl] = useState("");
-  const [category, setCategory] = useState("");
-  const [audience, setAudience] = useState("");
-  const [frequency, setFrequency] = useState("");
+  const [audiences, setAudiences] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const inputBase =
-    "w-full bg-white border-[1.5px] border-[#E8E8E8] rounded-[10px] px-4 text-[15px] text-[#111111] placeholder-[#AAAAAA] h-[46px] focus:outline-none focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.06)] transition-all";
+  const urlState = validateYouTubeUrl(channelUrl);
+
+  function toggleAudience(a: string) {
+    setAudiences((prev) => {
+      if (prev.includes(a)) return prev.filter((x) => x !== a);
+      if (prev.length >= 3) return prev;
+      return [...prev, a];
+    });
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!channelUrl.trim().includes("youtube.com") && !channelUrl.includes("youtu.be")) {
+    if (urlState !== "valid") {
       setError("Please enter a valid YouTube channel URL.");
+      return;
+    }
+    if (audiences.length === 0) {
+      setError("Please select at least one audience.");
       return;
     }
 
@@ -44,15 +73,18 @@ export default function AddChannelForm({ channelCount }: { channelCount: number 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           channel_url: channelUrl.trim(),
-          content_category: category,
-          target_audience: audience,
-          upload_frequency: frequency,
+          target_audience: audiences,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong. Please try again.");
+        const msg = data.error ?? "Something went wrong. Please try again.";
+        setError(
+          msg.includes("not found") ? "Channel not found. Check the URL and try again." :
+          msg.includes("Invalid") ? "Invalid URL. Use youtube.com/@handle or /channel/UC…" :
+          msg
+        );
         return;
       }
 
@@ -79,6 +111,9 @@ export default function AddChannelForm({ channelCount }: { channelCount: number 
     );
   }
 
+  const inputBase =
+    "w-full bg-white border-[1.5px] rounded-[10px] px-4 pr-11 text-[15px] text-[#111111] placeholder-[#AAAAAA] h-[46px] focus:outline-none focus:shadow-[0_0_0_3px_rgba(0,0,0,0.06)] transition-all";
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
@@ -88,84 +123,83 @@ export default function AddChannelForm({ channelCount }: { channelCount: number 
           YouTube Channel URL <span className="text-[#E8192C]">*</span>
         </label>
         <p className="text-[13px] text-[#888888] -mt-1">
-          e.g. youtube.com/@yourhandle or youtube.com/channel/UCxxxxx
+          youtube.com/@handle · youtube.com/channel/UC… · youtube.com/c/name
         </p>
-        <input
-          type="url"
-          required
-          placeholder="https://www.youtube.com/@yourchannel"
-          value={channelUrl}
-          onChange={(e) => setChannelUrl(e.target.value)}
-          className={inputBase}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="https://www.youtube.com/@yourchannel"
+            value={channelUrl}
+            onChange={(e) => setChannelUrl(e.target.value)}
+            disabled={loading}
+            className={`${inputBase} ${
+              urlState === "valid"
+                ? "border-[#16A34A] focus:border-[#16A34A] focus:shadow-[0_0_0_3px_rgba(22,163,74,0.10)]"
+                : urlState === "invalid"
+                ? "border-[#E8192C] focus:border-[#E8192C] focus:shadow-[0_0_0_3px_rgba(232,25,44,0.10)]"
+                : "border-[#E8E8E8] focus:border-[#111111]"
+            } disabled:opacity-50`}
+          />
+          {urlState === "valid" && (
+            <CheckCircle2
+              size={18}
+              strokeWidth={2}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#16A34A] pointer-events-none"
+            />
+          )}
+          {urlState === "invalid" && (
+            <AlertCircle
+              size={18}
+              strokeWidth={2}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#E8192C] pointer-events-none"
+            />
+          )}
+        </div>
       </div>
 
-      {/* Category + Audience */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-2">
-          <label className="text-[14px] font-medium text-[#111111]">
-            Content Category <span className="text-[#E8192C]">*</span>
-          </label>
-          <div className="relative">
-            <select
-              required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className={inputBase + " appearance-none cursor-pointer pr-9"}
-            >
-              <option value="" disabled>Select category</option>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] pointer-events-none text-[12px]">▾</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
+      {/* Target Audience — multi-select pills, max 3 */}
+      <div className="flex flex-col gap-3">
+        <div>
           <label className="text-[14px] font-medium text-[#111111]">
             Target Audience <span className="text-[#E8192C]">*</span>
           </label>
-          <div className="relative">
-            <select
-              required
-              value={audience}
-              onChange={(e) => setAudience(e.target.value)}
-              className={inputBase + " appearance-none cursor-pointer pr-9"}
-            >
-              <option value="" disabled>Select audience</option>
-              {AUDIENCES.map((a) => <option key={a} value={a}>{a}</option>)}
-            </select>
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] pointer-events-none text-[12px]">▾</span>
-          </div>
+          <p className="text-[13px] text-[#888888] mt-0.5">Select up to 3</p>
         </div>
-      </div>
-
-      {/* Upload frequency */}
-      <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-medium text-[#111111]">
-          Upload Frequency <span className="text-[#E8192C]">*</span>
-        </label>
-        <div className="relative">
-          <select
-            required
-            value={frequency}
-            onChange={(e) => setFrequency(e.target.value)}
-            className={inputBase + " appearance-none cursor-pointer pr-9"}
-          >
-            <option value="" disabled>Select frequency</option>
-            {FREQUENCIES.map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
-          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] pointer-events-none text-[12px]">▾</span>
+        <div className="flex flex-wrap gap-2">
+          {AUDIENCES.map((a) => {
+            const selected = audiences.includes(a);
+            const dimmed = !selected && audiences.length >= 3;
+            return (
+              <button
+                key={a}
+                type="button"
+                onClick={() => toggleAudience(a)}
+                disabled={dimmed || loading}
+                className={`px-3.5 py-2 rounded-full text-[13px] font-medium transition-all ${
+                  selected
+                    ? "bg-[#E8192C] text-white border-transparent"
+                    : dimmed
+                    ? "bg-[#F5F5F5] text-[#AAAAAA] border border-[#E8E8E8] opacity-50 cursor-not-allowed"
+                    : "bg-[#F5F5F5] text-[#3D3D3D] border border-[#E8E8E8] hover:border-[#111111] hover:text-[#111111]"
+                }`}
+              >
+                {a}
+              </button>
+            );
+          })}
         </div>
+        {/* Counter */}
+        <p className={`text-[13px] ${audiences.length === 3 ? "text-[#E8192C]" : "text-[#9B9B9B]"}`}>
+          {audiences.length} of 3 selected
+        </p>
       </div>
 
       {/* Error */}
       {error && (
-        <p
-          className="text-[#E8192C] text-[14px] bg-[#FFF0F0] border border-[#E8192C]/20 rounded-[10px] px-4 py-3"
-          style={{ boxShadow: "0 0 0 3px rgba(232,25,44,0.06)" }}
-        >
+        <div className="flex items-start gap-2.5 text-[#E8192C] text-[14px] bg-[#FFF0F0] border border-[#E8192C]/20 rounded-[10px] px-4 py-3">
+          <AlertCircle size={16} strokeWidth={2} className="shrink-0 mt-0.5" />
           {error}
-        </p>
+        </div>
       )}
 
       <div className="border-t border-[#F0F0F0]" />

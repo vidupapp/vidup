@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { CheckCircle2, XCircle, Zap, Sparkles } from "lucide-react";
 import SuccessRefresh from "./SuccessRefresh";
 
 export const metadata = { title: "Payment — VidUp" };
@@ -126,11 +127,8 @@ export default async function CreditsSuccessPage({
         style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)" }}
       >
         {/* Icon */}
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
-          style={{ background: "#F0FFF4", color: "#16A34A" }}
-        >
-          ✓
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "#F0FFF4" }}>
+          <CheckCircle2 size={32} strokeWidth={1.5} className="text-[#16A34A]" />
         </div>
 
         <div>
@@ -154,15 +152,17 @@ export default async function CreditsSuccessPage({
         >
           <span className="text-[14px] text-[#888888]">New balance</span>
           <span className="inline-flex items-center gap-1.5 bg-[#FFF0F0] text-[#E8192C] text-[14px] font-bold px-3 py-1.5 rounded-full">
-            ⚡ {newBalance} credits
+            <Zap size={13} strokeWidth={2.5} />
+            {newBalance} credits
           </span>
         </div>
 
         <Link
           href="/dashboard/new"
-          className="w-full py-[13px] bg-[#E8192C] text-white text-[15px] font-semibold rounded-lg text-center hover:bg-[#C41523] transition-all"
+          className="w-full py-[13px] bg-[#E8192C] text-white text-[15px] font-semibold rounded-lg text-center hover:bg-[#C41523] transition-all flex items-center justify-center gap-2"
         >
-          Generate a Pack →
+          <Sparkles size={16} strokeWidth={2} />
+          Generate a Pack
         </Link>
 
         <Link
@@ -183,11 +183,8 @@ function ErrorView({ message }: { message: string }) {
         className="bg-white rounded-2xl p-10 border border-[#F0F0F0] flex flex-col items-center text-center gap-5 max-w-md w-full"
         style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
       >
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
-          style={{ background: "#FFF0F0", color: "#E8192C" }}
-        >
-          ✕
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "#FFF0F0" }}>
+          <XCircle size={32} strokeWidth={1.5} className="text-[#E8192C]" />
         </div>
         <div>
           <h1 className="text-[20px] font-bold text-[#111111] mb-2">Payment issue</h1>

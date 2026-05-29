@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const LANGUAGES = [
@@ -140,7 +141,7 @@ export default function NewPackForm({ credits, channelId }: Props) {
                 <option value="" disabled>Select style</option>
                 {STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
-              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] pointer-events-none text-[12px]">▾</span>
+              <ChevronDown size={15} strokeWidth={2} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] pointer-events-none" />
             </div>
           </div>
 
@@ -158,7 +159,7 @@ export default function NewPackForm({ credits, channelId }: Props) {
                 <option value="" disabled>Select language</option>
                 {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
-              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] pointer-events-none text-[12px]">▾</span>
+              <ChevronDown size={15} strokeWidth={2} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888888] pointer-events-none" />
             </div>
           </div>
         </div>
@@ -190,12 +191,10 @@ export default function NewPackForm({ credits, channelId }: Props) {
 
         {/* Error */}
         {error && (
-          <p
-            className="text-[#E8192C] text-[14px] bg-[#FFF0F0] border border-[#E8192C]/20 rounded-[10px] px-4 py-3"
-            style={{ boxShadow: "0 0 0 3px rgba(232,25,44,0.06)" }}
-          >
+          <div className="flex items-start gap-2.5 text-[#E8192C] text-[14px] bg-[#FFF0F0] border border-[#E8192C]/20 rounded-[10px] px-4 py-3">
+            <AlertCircle size={16} strokeWidth={2} className="shrink-0 mt-0.5" />
             {error}
-          </p>
+          </div>
         )}
 
         <div className="border-t border-[#F0F0F0]" />

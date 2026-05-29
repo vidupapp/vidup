@@ -12,16 +12,17 @@ export async function POST(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const admin = createAdminClient() as any;
 
-    const { channel_url, content_category, target_audience, upload_frequency } =
+    const { channel_url, target_audience } =
       await req.json() as {
         channel_url: string;
-        content_category: string;
-        target_audience: string;
-        upload_frequency: string;
+        target_audience: string[];
       };
 
-    if (!channel_url?.trim() || !content_category || !target_audience || !upload_frequency) {
-      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+    if (!channel_url?.trim()) {
+      return NextResponse.json({ error: "Channel URL is required." }, { status: 400 });
+    }
+    if (!target_audience?.length) {
+      return NextResponse.json({ error: "Select at least one target audience." }, { status: 400 });
     }
 
     // Check existing channel count
@@ -66,10 +67,11 @@ export async function POST(req: NextRequest) {
         total_videos: channelData.totalVideos,
         avg_views: channelData.avgViews,
         recent_video_titles: channelData.recentVideoTitles,
-        upload_frequency,
-        content_category,
+        upload_frequency: channelData.uploadFrequency,
+        content_category: channelData.contentCategory,
         target_audience,
         primary_language: channelData.primaryLanguage ?? null,
+        avatar_url: channelData.avatarUrl ?? null,
       })
       .select("channel_id")
       .single() as { data: { channel_id: string } | null; error: unknown };

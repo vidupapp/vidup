@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import CopyButton from "./CopyButton";
 import type { Database } from "@/lib/supabase/types";
 import type { TitleItem, HookItem, ThumbnailItem } from "@/lib/prompts";
@@ -40,13 +41,15 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
           href="/dashboard"
           className="text-[14px] text-[#888888] hover:text-[#111111] transition-colors flex items-center gap-1.5"
         >
-          ← Back
+          <ArrowLeft size={15} strokeWidth={2} />
+          Back
         </Link>
         <Link
           href="/dashboard/new"
-          className="bg-[#E8192C] text-white text-[14px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#C41523] transition-all"
+          className="bg-[#E8192C] text-white text-[14px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#C41523] transition-all flex items-center gap-2"
         >
-          + New Pack
+          <Sparkles size={15} strokeWidth={2} />
+          New Pack
         </Link>
       </div>
 

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import type { Database } from "@/lib/supabase/types";
 
 export const metadata = {
@@ -130,7 +131,7 @@ export default async function DashboardPage() {
                   >
                     {pack.status}
                   </span>
-                  <span className="text-[#CCCCCC] group-hover:text-[#888888] transition-colors text-[18px]">→</span>
+                  <ChevronRight size={18} strokeWidth={2} className="text-[#CCCCCC] group-hover:text-[#888888] transition-colors" />
                 </div>
               </Link>
             );

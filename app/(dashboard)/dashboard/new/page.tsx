@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Tv2, PlusCircle, ArrowLeftRight, Zap } from "lucide-react";
 import NewPackForm from "./NewPackForm";
 
 export const metadata = { title: "New Pack — VidUp" };
@@ -24,7 +25,6 @@ export default async function NewPackPage() {
 
   const credits = profile?.credits_balance ?? 0;
 
-  // Resolve selected channel
   const selectedChannelId = cookieStore.get("vidup_channel")?.value ?? null;
   let selectedChannel: {
     channel_id: string;
@@ -51,7 +51,6 @@ export default async function NewPackPage() {
     selectedChannel = ch;
   }
 
-  // Check if user has any channels at all
   const { data: channels } = await admin
     .from("channels")
     .select("channel_id")
@@ -63,9 +62,10 @@ export default async function NewPackPage() {
     <div className="p-6 sm:p-8">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-2 text-[14px] text-[#888888] hover:text-[#111111] transition-colors mb-8"
+        className="inline-flex items-center gap-1.5 text-[14px] text-[#888888] hover:text-[#111111] transition-colors mb-8"
       >
-        ← Back
+        <ArrowLeft size={15} strokeWidth={2} />
+        Back
       </Link>
 
       <div className="mb-8">
@@ -78,13 +78,15 @@ export default async function NewPackPage() {
       </div>
 
       <div className="max-w-[680px]">
-        {/* No channels at all → prompt to add */}
+        {/* No channels at all */}
         {!hasChannels && (
           <div
             className="bg-white rounded-2xl p-10 border border-[#F0F0F0] flex flex-col items-center text-center gap-5"
             style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#FFF0F0] flex items-center justify-center text-2xl">📺</div>
+            <div className="w-14 h-14 rounded-2xl bg-[#FFF0F0] flex items-center justify-center">
+              <Tv2 size={26} className="text-[#E8192C]" strokeWidth={1.5} />
+            </div>
             <div>
               <h2 className="text-[18px] font-semibold text-[#111111] mb-1">Add a channel first</h2>
               <p className="text-[14px] text-[#888888] max-w-xs leading-relaxed">
@@ -95,18 +97,21 @@ export default async function NewPackPage() {
               href="/dashboard/channels/new"
               className="inline-flex items-center gap-2 bg-[#E8192C] text-white text-[15px] font-semibold px-7 py-3 rounded-lg hover:bg-[#C41523] transition-all"
             >
-              Add Channel →
+              <PlusCircle size={16} strokeWidth={2.5} />
+              Add Channel
             </Link>
           </div>
         )}
 
-        {/* Has channels but none selected → prompt to select */}
+        {/* Has channels but none selected */}
         {hasChannels && !selectedChannel && (
           <div
             className="bg-white rounded-2xl p-10 border border-[#F0F0F0] flex flex-col items-center text-center gap-5"
             style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#FFF0F0] flex items-center justify-center text-2xl">📺</div>
+            <div className="w-14 h-14 rounded-2xl bg-[#FFF0F0] flex items-center justify-center">
+              <Tv2 size={26} className="text-[#E8192C]" strokeWidth={1.5} />
+            </div>
             <div>
               <h2 className="text-[18px] font-semibold text-[#111111] mb-1">Select a channel first</h2>
               <p className="text-[14px] text-[#888888] max-w-xs leading-relaxed">
@@ -117,7 +122,8 @@ export default async function NewPackPage() {
               href="/dashboard/channels"
               className="inline-flex items-center gap-2 bg-[#E8192C] text-white text-[15px] font-semibold px-7 py-3 rounded-lg hover:bg-[#C41523] transition-all"
             >
-              Select Channel →
+              <Tv2 size={16} strokeWidth={2.5} />
+              Select Channel
             </Link>
           </div>
         )}
@@ -128,7 +134,9 @@ export default async function NewPackPage() {
             className="bg-white rounded-2xl p-12 border border-[#F0F0F0] flex flex-col items-center text-center gap-5"
             style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
           >
-            <div className="w-12 h-12 rounded-full bg-[#FFF0F0] flex items-center justify-center text-xl">😕</div>
+            <div className="w-12 h-12 rounded-full bg-[#FFF0F0] flex items-center justify-center">
+              <Zap size={22} className="text-[#E8192C]" strokeWidth={1.5} />
+            </div>
             <div>
               <h2 className="text-[18px] font-semibold text-[#111111] mb-1">No credits left</h2>
               <p className="text-[14px] text-[#888888] max-w-xs leading-relaxed">
@@ -137,8 +145,9 @@ export default async function NewPackPage() {
             </div>
             <Link
               href="/dashboard/credits"
-              className="bg-[#E8192C] text-white text-[15px] font-semibold px-6 py-3 rounded-lg hover:bg-[#C41523] transition-all"
+              className="inline-flex items-center gap-2 bg-[#E8192C] text-white text-[15px] font-semibold px-6 py-3 rounded-lg hover:bg-[#C41523] transition-all"
             >
+              <Zap size={16} strokeWidth={2.5} />
               Buy Credits
             </Link>
           </div>
@@ -152,21 +161,24 @@ export default async function NewPackPage() {
               className="flex items-center gap-3 bg-white border border-[#F0F0F0] rounded-xl px-4 py-3 mb-5"
               style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
             >
-              <span className="text-[18px]">📺</span>
+              <Tv2 size={18} className="text-[#888888] shrink-0" strokeWidth={1.5} />
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] text-[#888888]">Generating for</p>
                 <p className="text-[14px] font-semibold text-[#111111] truncate">
                   {selectedChannel.channel_name}
                 </p>
               </div>
-              <span className="text-[12px] bg-[#FFF0F0] text-[#E8192C] font-semibold px-2.5 py-1 rounded-full">
-                {selectedChannel.content_category}
-              </span>
+              {selectedChannel.content_category && (
+                <span className="text-[12px] bg-[#FFF0F0] text-[#E8192C] font-semibold px-2.5 py-1 rounded-full shrink-0">
+                  {selectedChannel.content_category}
+                </span>
+              )}
               <Link
                 href="/dashboard/channels"
-                className="text-[12px] text-[#888888] hover:text-[#E8192C] transition-colors font-medium"
+                className="inline-flex items-center gap-1 text-[12px] text-[#888888] hover:text-[#E8192C] transition-colors font-medium shrink-0"
               >
-                Switch ↔
+                <ArrowLeftRight size={13} strokeWidth={2} />
+                Switch
               </Link>
             </div>
 

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import AddChannelForm from "./AddChannelForm";
 
 export const metadata = { title: "Add Channel — VidUp" };
@@ -26,7 +27,8 @@ export default async function AddChannelPage() {
         href="/dashboard/channels"
         className="inline-flex items-center gap-2 text-[14px] text-[#888888] hover:text-[#111111] transition-colors mb-8"
       >
-        ← Back
+        <ArrowLeft size={15} strokeWidth={2} />
+        Back
       </Link>
 
       <div className="mb-8">
