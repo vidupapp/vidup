@@ -8,6 +8,7 @@ import {
   extractJSON,
   type AnalysisResult,
   type PackResult,
+  type ChannelContext,
 } from "@/lib/prompts";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -27,11 +28,12 @@ export async function POST(req: NextRequest) {
 
     // Parse body
     const body = await req.json();
-    const { topic, style, language, links } = body as {
+    const { topic, style, language, links, channel_id } = body as {
       topic: string;
       style: string;
       language: string;
       links: string[];
+      channel_id?: string;
     };
 
     if (!topic?.trim() || !style || !language || !Array.isArray(links) || links.length !== 3) {
@@ -47,6 +49,42 @@ export async function POST(req: NextRequest) {
 
     if (!profile || profile.credits_balance < 1) {
       return NextResponse.json({ error: "No credits remaining." }, { status: 402 });
+    }
+
+    // Fetch channel context if provided
+    let channelContext: ChannelContext | undefined;
+    if (channel_id) {
+      const { data: ch } = await db
+        .from("channels")
+        .select("channel_name, subscriber_count, avg_views, content_category, target_audience, upload_frequency, recent_video_titles")
+        .eq("channel_id", channel_id)
+        .eq("user_id", user.id)
+        .single() as {
+          data: {
+            channel_name: string;
+            subscriber_count: number;
+            avg_views: number;
+            content_category: string;
+            target_audience: string;
+            upload_frequency: string;
+            recent_video_titles: string[];
+          } | null;
+          error: unknown;
+        };
+
+      if (ch) {
+        channelContext = {
+          channel_name: ch.channel_name,
+          subscriber_count: ch.subscriber_count,
+          avg_views: ch.avg_views,
+          content_category: ch.content_category,
+          target_audience: ch.target_audience,
+          upload_frequency: ch.upload_frequency,
+          recent_video_titles: Array.isArray(ch.recent_video_titles)
+            ? ch.recent_video_titles as string[]
+            : [],
+        };
+      }
     }
 
     // Extract YouTube video IDs
@@ -105,14 +143,13 @@ export async function POST(req: NextRequest) {
         messages: [
           {
             role: "user",
-            content: buildGenerationPrompt(topic, style, language, analysis),
+            content: buildGenerationPrompt(topic, style, language, analysis, channelContext),
           },
         ],
       });
 
       const raw = generationMsg.content[0].type === "text" ? generationMsg.content[0].text : "";
       pack = JSON.parse(extractJSON(raw));
-      // Enforce exactly 3 of each regardless of what Claude returned
       pack.titles = pack.titles.slice(0, 3);
       pack.thumbnails = pack.thumbnails.slice(0, 3);
     } catch (err) {
@@ -128,6 +165,7 @@ export async function POST(req: NextRequest) {
       .from("packs")
       .insert({
         user_id: user.id,
+        channel_id: channel_id ?? null,
         topic: topic.trim(),
         style,
         language,

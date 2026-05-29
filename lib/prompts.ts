@@ -38,6 +38,16 @@ export interface PackResult {
   thumbnails: ThumbnailItem[];
 }
 
+export interface ChannelContext {
+  channel_name: string;
+  subscriber_count: number;
+  avg_views: number;
+  content_category: string;
+  target_audience: string;
+  upload_frequency: string;
+  recent_video_titles: string[];
+}
+
 // Strip markdown code fences Claude sometimes wraps JSON in
 export function extractJSON(raw: string): string {
   return raw
@@ -46,6 +56,12 @@ export function extractJSON(raw: string): string {
     .replace(/^```\s*/i, "")
     .replace(/\s*```$/i, "")
     .trim();
+}
+
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
+  return String(n);
 }
 
 export function buildAnalysisPrompt(videosJson: string): string {
@@ -71,7 +87,8 @@ export function buildGenerationPrompt(
   topic: string,
   style: string,
   language: string,
-  analysis: AnalysisResult
+  analysis: AnalysisResult,
+  channel?: ChannelContext
 ): string {
   const indianLanguages = [
     "Hindi", "Marathi", "Tamil", "Telugu", "Kannada",
@@ -92,6 +109,27 @@ LANGUAGE AUTHENTICITY RULES — ${language.toUpperCase()}:
 → Test: would a real creator say this out loud to camera? If not — rewrite it`
     : `LANGUAGE: Write in punchy, creator-style English. No corporate language. Sound like a real person talking to their audience.`;
 
+  const channelSection = channel
+    ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATOR'S CHANNEL CONTEXT — calibrate everything to this creator:
+Channel: ${channel.channel_name}
+Subscribers: ${formatCount(channel.subscriber_count)}
+Avg Views (recent): ${formatCount(channel.avg_views)}
+Content Category: ${channel.content_category}
+Target Audience: ${channel.target_audience}
+Upload Frequency: ${channel.upload_frequency}
+Recent Video Titles: ${channel.recent_video_titles.slice(0, 5).join(" | ")}
+
+Use this to:
+→ Match the vocabulary and energy of their existing content
+→ Set click score expectations appropriate for this channel size
+→ Titles and hooks should feel like a natural next video for THIS creator
+→ Don't overreach — a 10K channel sounds different from a 1M channel
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`
+    : "";
+
   return `You are a YouTube content strategist. Generate a complete pre-production pack for a creator.
 
 TOPIC: ${topic}
@@ -107,7 +145,7 @@ hooks), NOT copying their language.
 Do NOT output anything in Hindi, English, or any language other than ${language}
 unless it falls under the code-switching rules below.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+${channelSection}
 ${languageRules}
 
 COMPETITOR ANALYSIS (patterns to calibrate — language of output is still ${language}):
