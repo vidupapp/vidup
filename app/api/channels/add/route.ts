@@ -82,8 +82,26 @@ export async function POST(req: NextRequest) {
       .single() as { data: { channel_id: string } | null; error: unknown };
 
     if (saveError || !saved) {
-      console.error("Channel save error:", saveError);
-      return NextResponse.json({ error: "Failed to save channel." }, { status: 500 });
+      // Extract readable message from Supabase error object
+      const errObj = saveError as { message?: string; code?: string; details?: string } | null;
+      const errMsg = errObj?.message ?? "Unknown error";
+      console.error("Channel save error:", errMsg, errObj);
+
+      // Common diagnoses
+      if (errMsg.includes("relation") && errMsg.includes("exist")) {
+        return NextResponse.json(
+          { error: "Database table not found. Please run supabase/schema_channels.sql in your Supabase SQL Editor first." },
+          { status: 500 }
+        );
+      }
+      if (errMsg.includes("Maximum 2 channels")) {
+        return NextResponse.json({ error: "You can only add up to 2 channels." }, { status: 400 });
+      }
+
+      return NextResponse.json(
+        { error: `Failed to save channel: ${errMsg}` },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
