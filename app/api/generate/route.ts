@@ -81,7 +81,10 @@ export async function POST(req: NextRequest) {
           subscriber_count: ch.subscriber_count,
           avg_views: ch.avg_views,
           content_category: ch.content_category,
-          target_audience: ch.target_audience,
+          // target_audience may be JSONB array or legacy string
+          target_audience: Array.isArray(ch.target_audience)
+            ? ch.target_audience as string[]
+            : (ch.target_audience as string) ?? "",
           upload_frequency: ch.upload_frequency,
           recent_video_titles: Array.isArray(ch.recent_video_titles)
             ? ch.recent_video_titles as string[]
@@ -123,7 +126,7 @@ export async function POST(req: NextRequest) {
     try {
       const analysisMsg = await anthropic.messages.create({
         model: MODEL,
-        max_tokens: 1024,
+        max_tokens: 2048,
         messages: [{ role: "user", content: buildAnalysisPrompt(JSON.stringify(videos, null, 2)) }],
       });
 

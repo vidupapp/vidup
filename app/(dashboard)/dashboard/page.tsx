@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Sparkles } from "lucide-react";
 import type { Database } from "@/lib/supabase/types";
 
 export const metadata = {
@@ -59,9 +59,9 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/dashboard/new"
-          className="bg-[#E8192C] text-white text-[14px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#C41523] transition-all flex items-center gap-1.5"
+          className="bg-[#E8192C] text-white text-[14px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#C41523] transition-all flex items-center gap-2"
         >
-          <span className="text-[16px] leading-none font-bold">+</span>
+          <Sparkles size={15} strokeWidth={2} />
           New Pack
         </Link>
       </div>
@@ -72,8 +72,8 @@ export default async function DashboardPage() {
           className="bg-white rounded-2xl p-12 border border-[#F0F0F0] flex flex-col items-center text-center gap-5 max-w-md"
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)" }}
         >
-          <div className="w-14 h-14 rounded-2xl bg-[#FFF0F0] flex items-center justify-center text-2xl">
-            🎬
+          <div className="w-14 h-14 rounded-2xl bg-[#FFF0F0] flex items-center justify-center">
+            <Sparkles size={26} className="text-[#E8192C]" strokeWidth={1.5} />
           </div>
           <div>
             <h2 className="text-[18px] font-semibold text-[#111111] mb-1">No packs yet</h2>
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
             href="/dashboard/new"
             className="inline-flex items-center gap-2 bg-[#E8192C] text-white text-[15px] font-semibold px-7 py-3 rounded-lg hover:bg-[#C41523] transition-all"
           >
-            <span className="text-[16px] font-bold leading-none">+</span>
+            <Sparkles size={16} strokeWidth={2} />
             New Pack
           </Link>
         </div>

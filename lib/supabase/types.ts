@@ -105,6 +105,9 @@ export type Database = {
           created_at: string;
           credit_used: number;
           status: "Generated" | "Video Live" | "Results In";
+          video_url: string | null;
+          video_submitted_at: string | null;
+          results_fetched_at: string | null;
         };
         Insert: {
           pack_id?: string;
@@ -119,9 +122,15 @@ export type Database = {
           thumbnails: Json[];
           credit_used?: number;
           status?: "Generated" | "Video Live" | "Results In";
+          video_url?: string | null;
+          video_submitted_at?: string | null;
+          results_fetched_at?: string | null;
         };
         Update: {
           status?: "Generated" | "Video Live" | "Results In";
+          video_url?: string | null;
+          video_submitted_at?: string | null;
+          results_fetched_at?: string | null;
         };
       };
       results: {
