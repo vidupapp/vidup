@@ -8,6 +8,7 @@ import {
   buildAnalysisPrompt,
   buildGenerationPrompt,
   extractJSON,
+  LANGUAGE_RULES,
   type AnalysisResult,
   type PackResult,
   type ChannelContext,
@@ -141,6 +142,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // ── Step 2b: Fetch language rules from Supabase (with fallback) ─
+    let languageRules: string | undefined;
+    try {
+      const { data: rulesRow, error: rulesError } = await db
+        .from("prompts")
+        .select("prompt_text")
+        .eq("language", language)
+        .eq("call_type", "language_rules")
+        .single() as { data: { prompt_text: string } | null; error: unknown };
+
+      if (rulesError || !rulesRow?.prompt_text) {
+        console.warn(`[generate] language rules not found in DB for "${language}" — using hardcoded fallback`);
+        languageRules = LANGUAGE_RULES[language];
+      } else {
+        languageRules = rulesRow.prompt_text;
+      }
+    } catch (err) {
+      console.warn("[generate] language rules fetch threw — using hardcoded fallback:", err);
+      languageRules = LANGUAGE_RULES[language];
+    }
+
     // ── Step 3: Claude Call 2 — Pack Generation ───────────────
     let pack: PackResult;
     try {
@@ -150,7 +172,7 @@ export async function POST(req: NextRequest) {
         messages: [
           {
             role: "user",
-            content: buildGenerationPrompt(topic, style, language, analysis, channelContext),
+            content: buildGenerationPrompt(topic, style, language, analysis, channelContext, languageRules),
           },
         ],
       });

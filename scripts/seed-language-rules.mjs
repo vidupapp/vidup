@@ -1,92 +1,24 @@
-// ── Interfaces ────────────────────────────────────────────────
+/**
+ * Seeds language rules into the Supabase prompts table.
+ * Run AFTER applying supabase/add_language_rules_call_type.sql
+ *
+ * Usage:
+ *   SUPABASE_SERVICE_ROLE_KEY=... node scripts/seed-language-rules.mjs
+ */
 
-export interface AnalysisResult {
-  // existing
-  title_patterns: string[];
-  emotional_triggers: string[];
-  content_gaps: string[];
-  audience_level: string;
-  niche_language: string[];
-  thumbnail_patterns: string[];
-  hook_style: string;
-  what_is_working: string;
-  // new
-  title_formula: string[];
-  performance_ratio: string[];
-  dominant_trigger: string;
-  content_gap_specific: string;
-  thumbnail_formula: string;
-  best_performing_title: string;
-}
+import { createClient } from "@supabase/supabase-js";
 
-export interface TitleItem {
-  text: string;
-  type: string;
-  why: string;
-  click_score: number;
-}
+const supabase = createClient(
+  "https://kldtiaknpxpxbkpodkzl.supabase.co",
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
-export interface HookItem {
-  opening_line: string;
-  tension_builder: string;
-  payoff_promise: string;
-  full_script: string;
-  psychological_trigger: string;
-}
+// ── Exact rules text (keep in sync with lib/prompts.ts until migration verified) ──
 
-export interface ThumbnailItem {
-  layout: string;
-  face_emotion?: string;
-  emotion?: string;           // backward compat with old packs
-  text_overlay: string;
-  color_mood: string;
-  why_it_works?: string;
-  why?: string;               // backward compat with old packs
-  canva_url?: string;
-}
-
-export interface PackResult {
-  titles: TitleItem[];
-  hook: HookItem;
-  thumbnails: ThumbnailItem[];
-}
-
-export interface ChannelContext {
-  channel_name: string;
-  subscriber_count: number;
-  avg_views: number;
-  content_category: string | null;
-  target_audience: string | string[];
-  upload_frequency: string;
-  recent_video_titles: string[];
-}
-
-// ── Utilities ─────────────────────────────────────────────────
-
-export function extractJSON(raw: string): string {
-  return raw
-    .trim()
-    .replace(/^```json\s*/i, "")
-    .replace(/^```\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
-}
-
-function formatCount(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
-  return String(n);
-}
-
-function formatAudience(raw: string | string[]): string {
-  if (Array.isArray(raw)) return raw.join(", ");
-  return raw;
-}
-
-// ── Language rules per language ───────────────────────────────
-
-const LANGUAGE_RULES: Record<string, string> = {
-  Hindi: `HINDI LANGUAGE RULES (STRICT):
+const RULES = [
+  {
+    language: "Hindi",
+    prompt_text: `HINDI LANGUAGE RULES (STRICT):
 
 You are writing for a Hindi YouTube creator.
 Natural conversational Hinglish — as spoken by creators from Delhi/Mumbai/UP.
@@ -153,38 +85,68 @@ FINAL CHECK:
 → Zero Urdu-heavy words
 → Grammar correct
 → Natural Hinglish flow`,
+  },
+  {
+    language: "Marathi",
+    prompt_text: `MARATHI LANGUAGE RULES (STRICT):
 
-  Marathi: `MARATHI LANGUAGE RULES (non-negotiable):
+You are writing for a Marathi YouTube creator.
+Conversational Pune/Mumbai Marathi — not Hindi, not formal Marathi.
 
-You are writing for a Marathi YouTube creator. Conversational Pune/Mumbai Marathi.
+CRITICAL RULE:
+→ NEVER mix Hindi words into Marathi. This is the #1 failure mode.
+मला (Marathi) ≠ मुझे (Hindi)
+कसं (Marathi) ≠ कैसे (Hindi)
+काय (Marathi) ≠ क्या (Hindi)
+नाही (Marathi) ≠ नहीं (Hindi)
+आहे (Marathi) ≠ है (Hindi)
 
-→ CRITICAL: NEVER mix Hindi words into Marathi. This is the #1 failure mode.
-   मला (Marathi) ≠ मुझे (Hindi)
-   कसं (Marathi) ≠ कैसे (Hindi)
-   काय (Marathi) ≠ क्या (Hindi)
-   नाही (Marathi) ≠ नहीं (Hindi)
-   आहे (Marathi) ≠ है (Hindi)
-→ Mix Marathi and English naturally. Think like a creator from Pune/Nashik/Mumbai.
-→ NEVER use Hindi words. Marathi and Hindi are different languages.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, niche
+SCRIPT MIXING RULE:
+→ Mix Marathi and English naturally
+→ NEVER use Hindi words — Marathi and Hindi are different languages
+→ Conversational Pune/Nashik/Mumbai style
 
-✅ Correct Marathlish style:
-"हि चूक करू नका | YouTube Growth Tips"
-"Student असताना ₹50,000 कसे save करायचे?"
-"माझ्या channel ला 1 lakh subscribers कसे मिळाले"
-"कोणी सांगत नाही हे secret | Income tips"
+CONNECTOR WORDS:
+and → आणि / ही
+but → पण / परंतु
+so → म्हणून / तर
+because → कारण
+then → मग / नंतर
+now → आता
+today → आज
 
-❌ WRONG — Hindi words leaked in:
-"यह गलती मत करो" (Hindi, not Marathi)
-"मुझे यह अच्छा लगा" (Hindi)
-"कैसे करें" (Hindi verb form)
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche
 
-Grammar rules:
-→ Use conversational verb forms: कर / करा (casual), सांग / सांगा (casual)
+NATURAL MARATHLISH EXAMPLES:
+✅ "हि चूक करू नका | YouTube Tips"
+✅ "Student असताना ₹50,000 कसे save करायचे?"
+✅ "माझ्या channel ला 1 lakh subscribers कसे मिळाले"
+✅ "कोणी सांगत नाही हे secret"
+
+WRONG:
+❌ "यह गलती मत करो" (Hindi, not Marathi)
+❌ "मुझे यह अच्छा लगा" (Hindi)
+❌ "कैसे करें" (Hindi verb form)
+
+GRAMMAR RULES:
 → Key markers: मी (I), तुम्ही (you), आहे (is), नाही (no), कसं (how), काय (what)
-→ FINAL CHECK: Zero Hindi words. Would a Pune creator say this? Grammar correct?`,
+→ Casual verb forms: कर / करा (casual), सांग / सांगा (casual)
+→ Short sentences max 15 words
+→ Active voice always
 
-  Tamil: `TAMIL LANGUAGE RULES (STRICT):
+FINAL CHECK:
+→ Zero Hindi words
+→ Would a Pune creator say this?
+→ Grammar correct?`,
+  },
+  {
+    language: "Tamil",
+    prompt_text: `TAMIL LANGUAGE RULES (STRICT):
 
 You are writing for a Tamil YouTube creator.
 Natural spoken Tamil (Tanglish) as used by creators from Chennai/Coimbatore/Madurai.
@@ -252,8 +214,10 @@ FINAL CHECK:
 → Spoken Tamil forms only
 → No Telugu/Kannada/Hindi contamination
 → Script mixing is correct`,
-
-  Telugu: `TELUGU LANGUAGE RULES (STRICT):
+  },
+  {
+    language: "Telugu",
+    prompt_text: `TELUGU LANGUAGE RULES (STRICT):
 
 You are writing for a Telugu YouTube creator.
 Natural spoken Telugu (Tenglish) as used by creators from Hyderabad/Vijayawada/Vizag.
@@ -323,8 +287,10 @@ FINAL CHECK:
 → No Tamil/Kannada/Hindi words
 → Spoken forms throughout
 → Grammar correct`,
-
-  Kannada: `KANNADA LANGUAGE RULES (STRICT):
+  },
+  {
+    language: "Kannada",
+    prompt_text: `KANNADA LANGUAGE RULES (STRICT):
 
 You are writing for a Kannada YouTube creator.
 Natural spoken Kannada (Kanglish) as used by creators from Bangalore/Mysore/Hubli.
@@ -371,7 +337,7 @@ tutorial, design, beginners
 NATURAL KANGLISH EXAMPLES:
 ✅ "ಈ mistake ಮಾಡಬೇಡಿ | YouTube Tips"
 ✅ "ಯಾರೂ ಹೇಳದ secret ಇದೆ"
-✅ "ಶುರು ಮಾಡೋಣ" (not शुरू)
+✅ "ಶುರು ಮಾಡೋಣ"
 ✅ "Results ತುಂಬಾ shocking ಆಗಿತ್ತು"
 
 WRONG:
@@ -394,8 +360,10 @@ FINAL CHECK:
 → No Telugu/Tamil/Hindi contamination
 → Spoken forms throughout
 → Grammar correct`,
-
-  Bengali: `BENGALI LANGUAGE RULES (STRICT):
+  },
+  {
+    language: "Bengali",
+    prompt_text: `BENGALI LANGUAGE RULES (STRICT):
 
 You are writing for a Bengali YouTube creator.
 Natural spoken Bengali (Benglish) as used by creators from Kolkata/Dhaka area.
@@ -462,8 +430,10 @@ FINAL CHECK:
 → No Hindi contamination
 → Spoken forms throughout
 → Grammar correct`,
-
-  Gujarati: `GUJARATI LANGUAGE RULES (STRICT):
+  },
+  {
+    language: "Gujarati",
+    prompt_text: `GUJARATI LANGUAGE RULES (STRICT):
 
 You are writing for a Gujarati YouTube creator.
 Natural spoken Gujarati (Gujlish) as used by creators from Ahmedabad/Surat/Vadodara.
@@ -533,8 +503,10 @@ FINAL CHECK:
 → No Hindi/Marathi contamination
 → Business-friendly where relevant
 → Grammar correct`,
-
-  Malayalam: `MALAYALAM LANGUAGE RULES (STRICT):
+  },
+  {
+    language: "Malayalam",
+    prompt_text: `MALAYALAM LANGUAGE RULES (STRICT):
 
 You are writing for a Malayalam YouTube creator.
 Natural spoken Malayalam (Manglish) as used by creators from Kerala.
@@ -606,8 +578,10 @@ FINAL CHECK:
 → No Tamil/Telugu/Hindi contamination
 → Spoken forms throughout
 → Grammar correct`,
-
-  Punjabi: `PUNJABI LANGUAGE RULES (STRICT):
+  },
+  {
+    language: "Punjabi",
+    prompt_text: `PUNJABI LANGUAGE RULES (STRICT):
 
 You are writing for a Punjabi YouTube creator.
 Natural spoken Punjabi (Punglish) as used by creators from Punjab/Chandigarh/Ludhiana.
@@ -675,8 +649,10 @@ FINAL CHECK:
 → Energetic and expressive tone
 → Script correct throughout
 → Grammar and gender correct`,
-
-  English: `ENGLISH LANGUAGE RULES (STRICT):
+  },
+  {
+    language: "English",
+    prompt_text: `ENGLISH LANGUAGE RULES (STRICT):
 
 You are writing for an English YouTube creator.
 YouTube-native English — creator style, not corporate or academic language.
@@ -730,192 +706,40 @@ FINAL CHECK:
 → Creates genuine curiosity?
 → Under 70 characters?
 → Grammar is punchy and correct?`,
-};
-
-// ── Call 1: Analysis Prompt ───────────────────────────────────
-
-export function buildAnalysisPrompt(videosJson: string): string {
-  return `You are a YouTube growth strategist who has studied 10,000 viral videos. Analyze these 3 competitor videos with surgical precision.
-
-Videos data:
-${videosJson}
-
-Extract the following and return ONLY a valid JSON object — no explanation, no markdown:
-
-{
-  "title_patterns": ["patterns found across titles — structure, length, word choice"],
-  "emotional_triggers": ["specific emotions or psychological hooks used"],
-  "content_gaps": ["topics these videos don't cover that a new video could exploit"],
-  "audience_level": "beginner or intermediate or advanced",
-  "niche_language": ["specific words, phrases, or terminology this niche uses"],
-  "thumbnail_patterns": ["visual or text patterns based on titles and context"],
-  "hook_style": "one sentence describing how these videos typically open",
-  "what_is_working": "1-2 sentence summary of what makes these videos perform",
-  "title_formula": ["for each video, identify the formula: Number list / Question / How-to / Story / Contrarian / Curiosity gap / Personal story — one entry per video"],
-  "performance_ratio": ["for each video: views ÷ channel_subscriber_count — label as overperforming (>0.3) / average (0.1-0.3) / underperforming (<0.1) — if subscriber count unavailable, write 'data unavailable'"],
-  "dominant_trigger": "single strongest emotional trigger across all 3 videos — choose ONE: Fear / Curiosity / Aspiration / FOMO / Validation / Shock / Inspiration",
-  "content_gap_specific": "complete this sentence precisely: 'None of these videos cover [specific angle] for [specific audience type]' — be precise, not generic",
-  "thumbnail_formula": "identify the dominant visual formula across these videos — choose ONE: Face with reaction / Text only / Before and after / Number overlay / Comparison / Shocking image + text",
-  "best_performing_title": "which of the 3 titles is strongest AND exactly why in one sentence — be specific about the psychological mechanism"
-}`;
-}
-
-// Exported so the generate route can use it as a fallback
-export { LANGUAGE_RULES };
-
-// ── Call 2: Generation Prompt ─────────────────────────────────
-
-export function buildGenerationPrompt(
-  topic: string,
-  style: string,
-  language: string,
-  analysis: AnalysisResult,
-  channel?: ChannelContext,
-  languageRules?: string
-): string {
-  const resolvedRules = languageRules ??
-    LANGUAGE_RULES[language] ??
-    `LANGUAGE: Write in ${language}. Natural, conversational, creator-native style. No formal or academic language.`;
-
-
-  const category = channel?.content_category ?? "general";
-  const audienceStr = channel ? formatAudience(channel.target_audience) : "general audience";
-
-  const channelSection = channel ? `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-CREATOR'S CHANNEL — calibrate EVERYTHING to this creator:
-Channel: ${channel.channel_name}
-Subscribers: ${formatCount(channel.subscriber_count)}
-Avg Views (recent 10 videos): ${formatCount(channel.avg_views)}
-Content Category: ${channel.content_category ?? "Not specified"}
-Target Audience: ${audienceStr}
-Upload Frequency: ${channel.upload_frequency}
-
-Study these recent video titles from this creator carefully:
-${channel.recent_video_titles.slice(0, 5).map((t, i) => `  ${i + 1}. ${t}`).join("\n")}
-
-Your output must feel like the natural NEXT VIDEO from this channel. Match:
-→ The energy and tone of their existing titles
-→ The vocabulary level of their audience
-→ Content depth appropriate for ${formatCount(channel.subscriber_count)} subscribers
-→ The style their ${formatCount(channel.avg_views)} average-view audience responds to
-
-CRITICAL: Do NOT produce titles that sound bigger, more polished, or more viral than this creator's current content. A 10K channel sounds different from a 1M channel. Authenticity beats aspiration.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-` : "";
-
-  return `You are a YouTube content strategist who has grown 50 channels past 100K subscribers. You specialize in ${language} content for ${category} creators. You know exactly what makes a ${language}-speaking audience click and watch.
-
-TOPIC: ${topic}
-VIDEO STYLE: ${style}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-OUTPUT LANGUAGE: ${language} — NON-NEGOTIABLE
-Every word of output — titles, hook script, thumbnail text overlays — MUST be in ${language}.
-Competitor videos may be in any language. Extract PATTERNS only, not their language.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${channelSection}
-${resolvedRules}
-
-COMPETITOR ANALYSIS — use these patterns to calibrate output (language is still ${language}):
-${JSON.stringify(analysis, null, 2)}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TITLE QUALITY TEST — every title must pass ALL of these:
-→ Is it specific? (no vague words like "amazing", "best", "ultimate")
-→ Does it create genuine curiosity OR promise a clear, specific benefit?
-→ Would a real ${language} creator in this niche actually publish this?
-→ Is it under 70 characters?
-→ Does it use the dominant trigger identified: "${analysis.dominant_trigger}"?
-If any title fails these — rewrite it before returning.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-HOOK SCRIPT — write actual spoken words, not an outline:
-The hook must NOT start with:
-❌ "In this video..."
-❌ "Today we are going to..."
-❌ "Welcome back..."
-❌ "Hi everyone..."
-
-The hook MUST start with one of:
-✅ A shocking statement or specific fact
-✅ A specific number
-✅ A direct provocative question
-✅ A personal story moment in mid-action
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-STRICT RULES:
-→ "titles" array: EXACTLY 3 items
-→ "thumbnails" array: EXACTLY 3 items
-→ thumbnail text_overlay: maximum 3 words, in ${language}
-→ Return ONLY valid JSON. No explanation, no markdown.
-
-Generate the JSON now:
-{
-  "titles": [
-    {
-      "text": "title in ${language}",
-      "type": "Curiosity Gap",
-      "why": "specific psychological reason this title gets clicks",
-      "click_score": 8
-    },
-    {
-      "text": "title in ${language}",
-      "type": "Emotional Trigger",
-      "why": "specific psychological reason this title gets clicks",
-      "click_score": 8
-    },
-    {
-      "text": "title in ${language}",
-      "type": "SEO Optimised",
-      "why": "specific psychological reason this title gets clicks",
-      "click_score": 7
-    }
-  ],
-  "hook": {
-    "opening_line": "first 1-2 sentences — max 15 words — immediate tension or curiosity — in ${language}",
-    "tension_builder": "2-3 sentences expanding the tension, making viewer need to know more — in ${language}",
-    "payoff_promise": "1 sentence telling viewer exactly what they will learn or get — in ${language}",
-    "full_script": "complete 30-45 second hook as one flowing spoken script, paste-ready, in ${language}",
-    "psychological_trigger": "name of the main trigger e.g. Curiosity Gap, Fear of Missing Out, Social Proof, Aspiration"
   },
-  "thumbnails": [
-    {
-      "layout": "one line — visual arrangement e.g. 'Face left, bold text right' or 'Full face reaction, text overlay bottom third'",
-      "face_emotion": "exact emotion if person shown: shocked / proud / confused / excited / curious / disappointed — or 'No face needed'",
-      "text_overlay": "max 3 words in ${language} — the actual bold text on the thumbnail",
-      "color_mood": "2-3 specific colors and why — e.g. 'Red + white — urgency and clarity against dark background'",
-      "why_it_works": "one sentence psychological reason this thumbnail drives clicks",
-      "canva_url": "https://www.canva.com/search/templates?q=[3-4 word search like 'youtube thumbnail shocked face' URL encoded]"
-    },
-    {
-      "layout": "one line visual arrangement",
-      "face_emotion": "exact emotion or 'No face needed'",
-      "text_overlay": "max 3 words in ${language}",
-      "color_mood": "specific colors and why",
-      "why_it_works": "one sentence psychological reason",
-      "canva_url": "https://www.canva.com/search/templates?q=[URL encoded search term]"
-    },
-    {
-      "layout": "one line visual arrangement",
-      "face_emotion": "exact emotion or 'No face needed'",
-      "text_overlay": "max 3 words in ${language}",
-      "color_mood": "specific colors and why",
-      "why_it_works": "one sentence psychological reason",
-      "canva_url": "https://www.canva.com/search/templates?q=[URL encoded search term]"
+];
+
+async function run() {
+  console.log(`Seeding ${RULES.length} language rules into Supabase...\n`);
+
+  let inserted = 0;
+  let skipped = 0;
+  let failed = 0;
+
+  for (const { language, prompt_text } of RULES) {
+    const { error } = await supabase
+      .from("prompts")
+      .upsert(
+        { language, call_type: "language_rules", prompt_text, version: 1 },
+        { onConflict: "language,call_type" }
+      );
+
+    if (error) {
+      console.error(`FAIL  ${language.padEnd(10)}`, error.message);
+      failed++;
+    } else {
+      console.log(`OK    ${language}`);
+      inserted++;
     }
-  ]
+  }
+
+  console.log(`\nDone: ${inserted} upserted, ${skipped} skipped, ${failed} failed`);
+
+  if (failed > 0) {
+    console.log("\nIf you see a check constraint error, run this in Supabase SQL Editor first:");
+    console.log("  supabase/add_language_rules_call_type.sql");
+    process.exit(1);
+  }
 }
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-QUALITY GATE — before returning JSON, check:
-→ Do all titles sound like they are from a real ${language} YouTube creator?
-→ Is the hook genuinely compelling, or does it sound generic?
-→ Are all thumbnail text overlays in ${language} and max 3 words?
-→ Does everything feel calibrated to ${channel ? `a ${formatCount(channel.subscriber_count)} subscriber channel` : "this creator's level"}?
-→ Would a top ${language} creator be proud to use any of this output?
-
-If anything feels generic, templated, or like something ChatGPT would produce — rewrite it before returning.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-}
+run();
