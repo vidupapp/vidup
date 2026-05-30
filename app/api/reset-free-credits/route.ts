@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 
     // Record expiry of unused free credits before overwriting
     if (user.free_credits > 0) {
-      void admin.from("credit_transactions").insert({
+      await admin.from("credit_transactions").insert({
         user_id: user.user_id,
         type: "expired",
         credits: -user.free_credits,
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
       .update({ free_credits: 2, free_credits_reset_date: nextReset.toISOString() })
       .eq("user_id", user.user_id);
 
-    void admin.from("credit_transactions").insert({
+    await admin.from("credit_transactions").insert({
       user_id: user.user_id,
       type: "free_reset",
       credits: 2,
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
       .update({ free_credits: 2, free_credits_reset_date: nextReset.toISOString() })
       .eq("user_id", user.user_id);
 
-    void admin.from("credit_transactions").insert({
+    await admin.from("credit_transactions").insert({
       user_id: user.user_id,
       type: "free_reset",
       credits: 2,

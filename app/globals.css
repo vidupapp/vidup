@@ -46,3 +46,142 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* ── Indian script font classes ───────────────── */
+/* Hindi, Marathi, Punjabi all use Devanagari script */
+.lang-hindi,
+.lang-marathi,
+.lang-punjabi {
+  font-family: var(--font-devanagari), var(--font-inter), sans-serif;
+}
+
+.lang-bengali {
+  font-family: var(--font-bengali), var(--font-inter), sans-serif;
+}
+
+.lang-gujarati {
+  font-family: var(--font-gujarati), var(--font-inter), sans-serif;
+}
+
+.lang-tamil {
+  font-family: var(--font-tamil), var(--font-inter), sans-serif;
+}
+
+.lang-telugu {
+  font-family: var(--font-telugu), var(--font-inter), sans-serif;
+}
+
+.lang-kannada {
+  font-family: var(--font-kannada), var(--font-inter), sans-serif;
+}
+
+.lang-malayalam {
+  font-family: var(--font-malayalam), var(--font-inter), sans-serif;
+}
+
+/* ── Print styles ─────────────────────────────── */
+@media print {
+  @page {
+    margin: 16mm 14mm 24mm 14mm;
+  }
+
+  body {
+    background: white !important;
+    color: #111111 !important;
+  }
+
+  /* ── Hide all navigation chrome with !important
+       (beats Tailwind responsive variants like sm:flex
+        that are also active when printing from a desktop browser) ── */
+  aside,
+  header {
+    display: none !important;
+  }
+
+  /* Collapse the dashboard flex layout so content fills the page */
+  .min-h-screen {
+    min-height: unset !important;
+  }
+
+  /* Remove decorative chrome */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+  }
+
+  /* Remove colored left-border accent on cards — replace with thin neutral border */
+  [style*="borderLeft: \"3px solid #E8192C\""],
+  [style*="border-left: 3px solid #E8192C"] {
+    border-left: 1px solid #E8E8E8 !important;
+  }
+
+  /* Remove background tints from pill badges — show as plain text */
+  .bg-\[\#FFF0F0\],
+  .bg-\[\#F5F5F5\],
+  .bg-\[\#F0FFF4\] {
+    background: transparent !important;
+    color: #3D3D3D !important;
+  }
+
+  /* Keep the dark text-overlay preview block readable — invert to light */
+  .bg-\[\#0D0D0D\] {
+    background: #F5F5F5 !important;
+    border: 1px solid #E8E8E8 !important;
+  }
+  .bg-\[\#0D0D0D\] p {
+    color: #111111 !important;
+  }
+
+  /* Red accents → dark gray for ink saving */
+  .text-\[\#E8192C\] {
+    color: #3D3D3D !important;
+  }
+
+  /* Muted text stays readable */
+  .text-\[\#888888\] {
+    color: #666666 !important;
+  }
+
+  /* Page break helpers */
+  section[style*="breakBefore"] {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  /* Print footer — fixed to bottom of every page */
+  .print-footer {
+    position: fixed;
+    bottom: 14px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 11px;
+    color: #888888;
+  }
+
+  /* Indian script fonts in print — use CSS vars (fonts already loaded by next/font) */
+  .lang-hindi,
+  .lang-marathi,
+  .lang-punjabi {
+    font-family: var(--font-devanagari), sans-serif !important;
+  }
+  .lang-bengali {
+    font-family: var(--font-bengali), sans-serif !important;
+  }
+  .lang-gujarati {
+    font-family: var(--font-gujarati), sans-serif !important;
+  }
+  .lang-tamil {
+    font-family: var(--font-tamil), sans-serif !important;
+  }
+  .lang-telugu {
+    font-family: var(--font-telugu), sans-serif !important;
+  }
+  .lang-kannada {
+    font-family: var(--font-kannada), sans-serif !important;
+  }
+  .lang-malayalam {
+    font-family: var(--font-malayalam), sans-serif !important;
+  }
+}

@@ -88,6 +88,19 @@ export default function NewPackForm({ credits, channelId }: Props) {
   const inputBase =
     "w-full bg-white border-[1.5px] border-[#E8E8E8] rounded-[10px] px-4 text-[15px] text-[#111111] placeholder-[#AAAAAA] focus:outline-none focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.06)] transition-all";
 
+  const langFontClass: Record<string, string> = {
+    Hindi: "lang-hindi",
+    Marathi: "lang-marathi",
+    Punjabi: "lang-punjabi",
+    Bengali: "lang-bengali",
+    Gujarati: "lang-gujarati",
+    Tamil: "lang-tamil",
+    Telugu: "lang-telugu",
+    Kannada: "lang-kannada",
+    Malayalam: "lang-malayalam",
+  };
+  const topicFontClass = langFontClass[language] ?? "";
+
   return (
     <>
       {/* Loading overlay */}
@@ -121,7 +134,7 @@ export default function NewPackForm({ credits, channelId }: Props) {
             placeholder="Describe what your video is about in 1–2 lines. E.g. How I saved ₹1 lakh in 6 months on a ₹30k salary"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            className={inputBase + " resize-y min-h-[96px] py-3 leading-relaxed"}
+            className={`${inputBase} resize-y min-h-[96px] py-3 leading-relaxed ${topicFontClass}`}
           />
         </div>
 

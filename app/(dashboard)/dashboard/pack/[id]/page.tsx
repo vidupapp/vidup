@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Sparkles, ExternalLink } from "lucide-react";
 import CopyButton from "./CopyButton";
+import DownloadButton from "./DownloadButton";
 import MarkAsUsedButton from "./MarkAsUsedButton";
 import type { Database } from "@/lib/supabase/types";
 import type { TitleItem, HookItem, ThumbnailItem } from "@/lib/prompts";
@@ -65,11 +66,43 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
   const hook = pack.hook as unknown as HookItem;
   const thumbnails = pack.thumbnails as unknown as ThumbnailItem[];
 
+  const packDate = new Date(pack.created_at).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const langClass: Record<string, string> = {
+    Hindi: "lang-hindi",
+    Marathi: "lang-marathi",
+    Punjabi: "lang-punjabi",
+    Bengali: "lang-bengali",
+    Gujarati: "lang-gujarati",
+    Tamil: "lang-tamil",
+    Telugu: "lang-telugu",
+    Kannada: "lang-kannada",
+    Malayalam: "lang-malayalam",
+  };
+  const fontClass = langClass[pack.language] ?? "";
+
   return (
-    <div className="p-6 sm:p-8 max-w-[760px]">
+    <div className={`p-6 sm:p-8 max-w-[760px] ${fontClass}`}>
+
+      {/* ── PRINT HEADER (hidden on screen) ─────────── */}
+      <div className="hidden print:block mb-6 pb-5 border-b border-[#E8E8E8]">
+        <div className="flex items-baseline justify-between mb-2">
+          <span className="text-[18px] font-bold text-[#111111]">
+            vid<span className="text-[#111111]">up</span>
+          </span>
+          <span className="text-[13px] font-semibold text-[#3D3D3D]">Pre-Production Pack</span>
+        </div>
+        <p className="text-[12px] text-[#888888]">
+          {channelName ? `${channelName} · ` : ""}{packDate} · {pack.language}
+        </p>
+      </div>
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="print:hidden flex items-center justify-between mb-8">
         <Link
           href="/dashboard"
           className="text-[14px] text-[#888888] hover:text-[#111111] transition-colors flex items-center gap-1.5"
@@ -77,13 +110,16 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
           <ArrowLeft size={15} strokeWidth={2} />
           Back
         </Link>
-        <Link
-          href="/dashboard/new"
-          className="bg-[#E8192C] text-white text-[14px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#C41523] transition-all flex items-center gap-2"
-        >
-          <Sparkles size={15} strokeWidth={2} />
-          New Pack
-        </Link>
+        <div className="flex items-center gap-3">
+          <DownloadButton />
+          <Link
+            href="/dashboard/new"
+            className="bg-[#E8192C] text-white text-[14px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#C41523] transition-all flex items-center gap-2"
+          >
+            <Sparkles size={15} strokeWidth={2} />
+            New Pack
+          </Link>
+        </div>
       </div>
 
       {/* Topic */}
@@ -133,7 +169,7 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
       </section>
 
       {/* ── HOOK SCRIPT ──────────────────────────────── */}
-      <section className="mb-8">
+      <section className="mb-8" style={{ breakBefore: "page" }}>
         <h2 className="text-[16px] font-semibold text-[#111111] mb-4">Hook Script</h2>
         <div
           className="bg-white rounded-2xl border border-[#F0F0F0] overflow-hidden"
@@ -173,7 +209,7 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
       </section>
 
       {/* ── THUMBNAIL IDEAS ───────────────────────────── */}
-      <section className="mb-8">
+      <section className="mb-8" style={{ breakBefore: "page" }}>
         <h2 className="text-[16px] font-semibold text-[#111111] mb-4">Thumbnail Ideas</h2>
         <div className="flex flex-col gap-4">
           {thumbnails.map((thumb, i) => {
@@ -242,15 +278,20 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
                   )}
 
                   {thumb.canva_url && (
-                    <a
-                      href={thumb.canva_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-[#E8192C] text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg hover:bg-[#C41523] transition-all"
-                    >
-                      <ExternalLink size={14} strokeWidth={2.5} />
-                      Open in Canva
-                    </a>
+                    <>
+                      <a
+                        href={thumb.canva_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="print:hidden inline-flex items-center gap-2 bg-[#E8192C] text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg hover:bg-[#C41523] transition-all"
+                      >
+                        <ExternalLink size={14} strokeWidth={2.5} />
+                        Open in Canva
+                      </a>
+                      <p className="hidden print:block text-[12px] text-[#3D3D3D] break-all">
+                        <span className="font-semibold">Canva template:</span> {thumb.canva_url}
+                      </p>
+                    </>
                   )}
                 </div>
               </div>
@@ -260,17 +301,24 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
       </section>
 
       {/* ── HELP VIDUP LEARN ─────────────────────────── */}
-      <MarkAsUsedButton
-        packId={pack.pack_id}
-        status={pack.status}
-        videoSubmittedAt={pack.video_submitted_at ?? null}
-        channelName={channelName}
-        resultsCount={resultsCount ?? 0}
-        formattedSubscribers={formatCount(subscriberCount)}
-        language={pack.language}
-        totalPacks={totalPacks ?? 0}
-        isFirstPack={(userPackCount ?? 0) <= 1}
-      />
+      <div className="print:hidden">
+        <MarkAsUsedButton
+          packId={pack.pack_id}
+          status={pack.status}
+          videoSubmittedAt={pack.video_submitted_at ?? null}
+          channelName={channelName}
+          resultsCount={resultsCount ?? 0}
+          formattedSubscribers={formatCount(subscriberCount)}
+          language={pack.language}
+          totalPacks={totalPacks ?? 0}
+          isFirstPack={(userPackCount ?? 0) <= 1}
+        />
+      </div>
+
+      {/* ── PRINT FOOTER (hidden on screen, fixed on every printed page) ── */}
+      <div className="print-footer hidden print:block">
+        Generated by VidUp · vidup.in
+      </div>
 
     </div>
   );

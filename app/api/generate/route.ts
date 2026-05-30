@@ -196,7 +196,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Step 6: Record credit transaction ────────────────────────────
-    void db.from("credit_transactions").insert({
+    await admin.from("credit_transactions").insert({
       user_id: user.id,
       type: "generation",
       credits: -1,

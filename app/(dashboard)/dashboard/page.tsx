@@ -25,6 +25,18 @@ function formatDate(iso: string) {
   });
 }
 
+const LANG_CLASS: Record<string, string> = {
+  Hindi: "lang-hindi",
+  Marathi: "lang-marathi",
+  Punjabi: "lang-punjabi",
+  Bengali: "lang-bengali",
+  Gujarati: "lang-gujarati",
+  Tamil: "lang-tamil",
+  Telugu: "lang-telugu",
+  Kannada: "lang-kannada",
+  Malayalam: "lang-malayalam",
+};
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 
@@ -119,7 +131,7 @@ export default async function DashboardPage() {
               >
                 {/* Main content */}
                 <div className="flex-1 px-5 py-4">
-                  <p className="text-[16px] font-semibold text-[#111111] leading-snug mb-2 group-hover:text-[#E8192C] transition-colors">
+                  <p className={`text-[16px] font-semibold text-[#111111] leading-snug mb-2 group-hover:text-[#E8192C] transition-colors ${LANG_CLASS[pack.language] ?? ""}`}>
                     {pack.topic}
                   </p>
                   <div className="flex items-center gap-2 flex-wrap">

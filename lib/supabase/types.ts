@@ -13,8 +13,8 @@ export type Database = {
         Row: {
           user_id: string;
           email: string;
-          credits_balance: number;        // legacy — kept for migration safety
-          free_credits_used: number;      // legacy
+          credits_balance?: number;       // legacy column — do not use in new code
+          free_credits_used?: number;     // legacy column — do not use in new code
           free_credits: number;           // new: resets monthly
           purchased_credits: number;      // new: never expires
           referral_credits: number;       // new: never expires

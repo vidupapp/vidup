@@ -15,7 +15,7 @@ const navItems = [
   { href: "/dashboard",           label: "Dashboard",   Icon: LayoutDashboard },
   { href: "/dashboard/new",       label: "New Pack",    Icon: Sparkles },
   { href: "/dashboard/channels",  label: "Channels",    Icon: Tv2 },
-  { href: "/dashboard/credits",   label: "Buy Credits", Icon: Zap },
+  { href: "/dashboard/credits",   label: "Credits",     Icon: Zap },
   { href: "/dashboard/referral",  label: "Refer & Earn", Icon: Gift },
 ];
 
@@ -27,7 +27,7 @@ export default function DashboardSidebar({ selectedChannel }: Props) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden sm:flex flex-col w-[240px] shrink-0 min-h-screen border-r border-[#F0F0F0] bg-white px-4 py-6">
+    <aside className="print:hidden hidden sm:flex flex-col w-[240px] shrink-0 min-h-screen border-r border-[#F0F0F0] bg-white px-4 py-6">
 
       {/* Logo */}
       <div className="px-2 mb-8">

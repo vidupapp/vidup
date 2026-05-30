@@ -59,7 +59,7 @@ export default function OnboardingCard() {
         onClick={handleDismiss}
         className="inline-flex items-center gap-2 bg-[#E8192C] text-white text-[14px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#C41523] transition-all"
       >
-        Got it, let&apos;s go →
+        Got it, let&apos;s go
       </button>
     </div>
   );

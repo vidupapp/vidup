@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 
 const steps = [
   {
@@ -64,28 +65,10 @@ const stats = [
   { number: "₹0", label: "To get started" },
 ];
 
-const freeFeatures = [
-  { text: "2 credits/month", ok: true },
-  { text: "Resets monthly", ok: true },
-  { text: "Basic output", ok: true },
-  { text: "Competitor analysis", ok: false },
-  { text: "Performance insights", ok: false },
-  { text: "Credits carry forward", ok: false },
-];
-
-const paidFeatures = [
-  "Full AI-powered output",
-  "Competitor link analysis",
-  "All 10 languages",
-  "Performance insights",
-  "History dashboard",
-  "Credits never expire",
-];
-
 const creditPacks = [
-  { name: "Starter", price: "₹79", credits: 25, perCredit: "₹3.16", best: false },
-  { name: "Creator", price: "₹149", credits: 55, perCredit: "₹2.71", best: true },
-  { name: "Pro", price: "₹299", credits: 120, perCredit: "₹2.49", best: false },
+  { type: "Starter", price: "₹79",  credits: 25,  perCredit: "₹3.16", best: false },
+  { type: "Creator", price: "₹149", credits: 55,  perCredit: "₹2.71", best: true  },
+  { type: "Pro",     price: "₹299", credits: 120, perCredit: "₹2.49", best: false },
 ];
 
 const languages = [
@@ -377,92 +360,73 @@ export default function Home() {
             No subscriptions. Credits never expire.
           </p>
 
-          {/* Free vs Paid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-14">
-            <div className="rounded-2xl p-8 border border-[#E8E8E8]" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-              <p className="text-[12px] font-bold uppercase tracking-widest text-[#888888] mb-1">Free</p>
-              <p className="text-[40px] font-extrabold text-[#111111] leading-none mb-1">₹0</p>
-              <p className="text-[#888888] text-[14px] mb-8">2 credits/month · resets on signup date</p>
-              <ul className="flex flex-col gap-3">
-                {freeFeatures.map((f) => (
-                  <li key={f.text} className="flex items-center gap-3 text-[14px]">
-                    <span className={`font-bold text-[13px] ${f.ok ? "text-[#16A34A]" : "text-[#CCCCCC]"}`}>
-                      {f.ok ? "✓" : "✕"}
-                    </span>
-                    <span className={f.ok ? "text-[#3D3D3D]" : "text-[#AAAAAA]"}>{f.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="rounded-2xl p-8" style={{ background: "#0D0D0D" }}>
-              <p className="text-[12px] font-bold uppercase tracking-widest text-[#555555] mb-1">Any paid pack</p>
-              <p className="text-[40px] font-extrabold text-white leading-none mb-1">Full access</p>
-              <p className="text-[#555555] text-[14px] mb-8">Unlock everything with any credit pack</p>
-              <ul className="flex flex-col gap-3">
-                {paidFeatures.map((f) => (
-                  <li key={f} className="flex items-center gap-3 text-[14px]">
-                    <span className="text-[#E8192C] font-bold text-[13px]">✓</span>
-                    <span className="text-[#888888]">{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* How credits work */}
+          <div className="flex flex-col gap-3 mb-14 max-w-xl mx-auto w-full">
+            {[
+              "1 credit = 1 complete pack (3 titles + 1 hook script + 3 thumbnail ideas)",
+              "Free credits reset monthly on your signup date. Purchased credits never expire.",
+              "Refer a friend — you both earn 5 credits when they make their first purchase.",
+            ].map((text) => (
+              <div key={text} className="flex items-start gap-3">
+                <CheckCircle2 size={16} strokeWidth={2.5} className="text-[#E8192C] shrink-0 mt-0.5" />
+                <p className="text-[15px] text-[#3D3D3D] leading-relaxed">{text}</p>
+              </div>
+            ))}
           </div>
 
           {/* Credit packs */}
-          <h3 className="text-center text-[16px] font-bold text-[#111111] mb-6">Pick your credit pack</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-center">
             {creditPacks.map((pack) => (
               <div
-                key={pack.name}
-                className={`relative rounded-2xl p-8 flex flex-col gap-5 transition-all duration-[250ms] ${
+                key={pack.type}
+                className={`relative flex flex-col bg-white rounded-2xl ${
                   pack.best
-                    ? "border-2 border-[#E8192C] bg-white"
-                    : "border border-[#E8E8E8] bg-white hover:border-zinc-300"
+                    ? "border-2 border-[#E8192C]"
+                    : "border border-[#F0F0F0]"
                 }`}
-                style={
-                  pack.best
+                style={{
+                  padding: "28px",
+                  ...(pack.best
                     ? { transform: "scale(1.03)", boxShadow: "0 8px 40px rgba(232,25,44,0.15)" }
-                    : { boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }
-                }
+                    : { boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)" }),
+                }}
               >
                 {pack.best && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#E8192C] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full whitespace-nowrap">
-                    Best Value
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#E8192C] text-white text-[12px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-full whitespace-nowrap">
+                    BEST VALUE
                   </span>
                 )}
 
-                <div>
-                  <p className="text-[12px] font-bold uppercase tracking-widest text-[#888888] mb-2">{pack.name}</p>
-                  <p className="text-[40px] font-extrabold text-[#111111] leading-none">{pack.price}</p>
-                </div>
-
-                <div>
-                  <p className="text-[20px] font-bold text-[#111111]">{pack.credits} credits</p>
-                  <p className="text-[13px] text-[#888888] mt-0.5">{pack.perCredit} per credit</p>
-                </div>
-
+                {/* Credits number */}
+                <p style={{ fontSize: "56px", fontWeight: 800, color: "#111111", lineHeight: 1 }}>
+                  {pack.credits}
+                </p>
+                {/* credits label */}
+                <p style={{ fontSize: "14px", fontWeight: 400, color: "#9B9B9B", marginTop: "4px" }}>
+                  credits
+                </p>
+                {/* per credit price */}
+                <p style={{ fontSize: "13px", fontWeight: 400, color: "#9B9B9B", marginTop: "16px" }}>
+                  {pack.perCredit} per credit
+                </p>
+                {/* buy button */}
                 <Link
                   href="/login"
-                  className={`w-full py-3 rounded-full font-semibold text-[15px] text-center transition-all mt-auto ${
+                  className={`w-full text-white font-semibold text-[15px] text-center rounded-full transition-all ${
                     pack.best
-                      ? "bg-[#E8192C] text-white hover:bg-[#C41523]"
-                      : "bg-[#111111] text-white hover:bg-zinc-800"
+                      ? "bg-[#E8192C] hover:bg-[#C41523]"
+                      : "bg-[#111111] hover:bg-zinc-800"
                   }`}
+                  style={{ marginTop: "24px", paddingTop: "14px", paddingBottom: "14px", display: "block" }}
                 >
-                  Get Started
+                  Buy for {pack.price}
                 </Link>
               </div>
             ))}
           </div>
 
-          <p className="text-center text-[#888888] text-[14px] mt-8 leading-relaxed">
-            All packs unlock full features. Credits never expire and stack when you buy more.<br />
-            Top up anytime.
-          </p>
-          <p className="text-center text-[14px] mt-4" style={{ color: "#9B9B9B" }}>
-            Start free with 2 credits every month. Buy more anytime — credits never expire.
+          <p className="text-center text-[13px] mt-4" style={{ color: "#9B9B9B" }}>
+            Credits never expire · Stack across purchases
           </p>
         </div>
       </section>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, Check, Zap, ArrowRight } from "lucide-react";
+import { Sparkles, Check, Zap } from "lucide-react";
 
 export const metadata = {
   title: "Refer & Earn — VidUp",
@@ -66,7 +66,6 @@ export default function ReferralProgramPage() {
         >
           <Sparkles size={18} strokeWidth={2.5} />
           Start referring for free
-          <ArrowRight size={18} strokeWidth={2.5} />
         </Link>
         <p className="text-[13px] text-[#444444]">Free account · No credit card · Referral link ready instantly</p>
       </div>

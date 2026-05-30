@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
@@ -108,11 +107,6 @@ export default async function CreditsSuccessPage({
       .update({ purchased_credits: currentPurchased + creditsAdded })
       .eq("user_id", user.id);
 
-    // Compute new total for display
-    const freeCr = profile?.free_credits ?? 2;
-    const refCr = profile?.referral_credits ?? 0;
-    newBalance = freeCr + (currentPurchased + creditsAdded) + refCr;
-
     // Referral bonus — only on first purchase
     if (profile?.referred_by) {
       const { count: successCount } = await admin
@@ -143,7 +137,7 @@ export default async function CreditsSuccessPage({
             .eq("user_id", referrer.user_id);
 
           // Record referral reward for referrer
-          void admin.from("credit_transactions").insert({
+          await admin.from("credit_transactions").insert({
             user_id: referrer.user_id,
             type: "referral",
             credits: 5,
@@ -153,7 +147,7 @@ export default async function CreditsSuccessPage({
         }
 
         // Record buyer bonus
-        void admin.from("credit_transactions").insert({
+        await admin.from("credit_transactions").insert({
           user_id: user.id,
           type: "bonus",
           credits: 5,
@@ -165,16 +159,29 @@ export default async function CreditsSuccessPage({
       }
     }
 
-    // Record purchase transaction
-    void admin.from("credit_transactions").insert({
+    // Record purchase transaction (amount_paid in rupees, not paise)
+    const { error: txInsertError } = await admin.from("credit_transactions").insert({
       user_id: user.id,
       type: "purchase",
       credits: creditsAdded + (referralBonusAdded ? 5 : 0),
-      amount_paid: txn.amount ?? 0,
+      amount_paid: Math.round((txn.amount ?? 0) / 100),
       description: txn.pack_type ?? null,
     });
+    if (txInsertError) console.error("credit_transactions insert failed:", txInsertError);
 
-    revalidatePath("/dashboard", "layout");
+    // Re-fetch fresh balance after all writes for accurate display
+    const { data: freshProfile } = await admin
+      .from("users")
+      .select("free_credits, purchased_credits, referral_credits")
+      .eq("user_id", user.id)
+      .single() as {
+        data: { free_credits: number; purchased_credits: number; referral_credits: number } | null;
+        error: unknown;
+      };
+
+    newBalance = (freshProfile?.free_credits ?? 0)
+              + (freshProfile?.purchased_credits ?? 0)
+              + (freshProfile?.referral_credits ?? 0);
 
   } else if (txn?.status === "success") {
     // Already processed — safe to show (idempotent)

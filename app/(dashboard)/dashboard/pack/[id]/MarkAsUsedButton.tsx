@@ -192,7 +192,7 @@ export default function MarkAsUsedButton({
               className="inline-flex items-center gap-2 text-[14px] font-medium text-[#888888] border border-[#E8E8E8] hover:border-[#3D3D3D] hover:text-[#3D3D3D] px-5 py-2.5 rounded-lg transition-all shrink-0"
             >
               <Sparkles size={15} strokeWidth={2} />
-              Help VidUp learn →
+              Help VidUp learn
             </button>
           </div>
         )}

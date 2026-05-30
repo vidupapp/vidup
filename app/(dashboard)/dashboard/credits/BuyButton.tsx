@@ -76,6 +76,7 @@ export default function BuyButton({ packType, label, highlight }: Props) {
             ? "bg-[#E8192C] text-white hover:bg-[#C41523] hover:shadow-[0_4px_16px_rgba(232,25,44,0.30)]"
             : "bg-[#111111] text-white hover:bg-zinc-800"
         }`}
+        style={{ paddingTop: "14px", paddingBottom: "14px" }}
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">

@@ -274,15 +274,17 @@ Every pack ever generated auto-saved. Each card shows:
 
 ## Payment Flow (Cashfree)
 
-1. User visits `/dashboard/credits` → sees 3 pack cards
-2. Clicks "Buy [Pack]" → `BuyButton` calls `/api/payment/create-order`
+1. User opens Buy Credits modal (from credits page or TopBar hover) → sees 3 pack cards
+2. Clicks "Buy for ₹XX" → `BuyButton` calls `/api/payment/create-order`
 3. Server saves pending transaction (UUID = idempotency key), creates Cashfree order with UUID in `order_note`
 4. Cashfree JS SDK opens checkout → user pays
 5. Cashfree redirects to `/dashboard/credits/success?order_id=XXX`
-6. Server verifies with Cashfree → finds transaction by UUID in `order_note` → marks success → adds credits via admin client
-7. `revalidatePath` + `router.refresh()` updates sidebar balance instantly
+6. Server verifies with Cashfree → finds transaction by UUID in `order_note` → marks success → updates `purchased_credits` via admin client → inserts into `credit_transactions`
+7. Balance re-fetched fresh from DB (not computed from pre-update values) → displayed on success page
+8. `SuccessRefresh` client component calls `router.refresh()` after 800ms → sidebar balance updates
 
 **Idempotency:** If success page is loaded twice, the transaction status check prevents double-crediting.
+**Cashfree SDK:** Loaded in `TopBar.tsx` (runs on all dashboard pages) — required since Buy Credits modal can open from anywhere.
 
 ---
 
@@ -292,10 +294,27 @@ Every pack ever generated auto-saved. Each card shows:
 
 **USERS**
 ```
-user_id, email, credits_balance, free_credits_used,
+user_id, email,
+free_credits (resets monthly, default 2),
+purchased_credits (never expires, default 0),
+referral_credits (never expires, default 0),
+free_credits_reset_date,
+onboarding_dismissed,
 signup_date, monthly_reset_date, referral_code,
 referred_by, created_at
 ```
+Legacy column `credits_balance` still exists in DB but is unused — all code reads/writes the 3 new columns.
+
+**CREDIT_TRANSACTIONS**
+```
+id, user_id,
+type: 'purchase' | 'free_reset' | 'referral' | 'bonus' | 'generation' | 'expired',
+credits (positive = added, negative = used),
+amount_paid (rupees, 0 for non-purchases),
+description, created_at
+```
+RLS: SELECT + INSERT for own rows. Admin client used for all server-side inserts.
+Trigger: `handle_new_user` inserts a `bonus` row (+2) on every new signup.
 
 **PACKS**
 ```
@@ -358,6 +377,8 @@ app/
   (dashboard)/
     layout.tsx                          → Sidebar layout wrapper (fetches credits + selected channel)
     DashboardSidebar.tsx                → Sidebar client component (Lucide icons, active states)
+    BuyCreditsModal.tsx                 → Shared buy credits modal (pack cards, how it works, referral nudge)
+                                          Opened from TopBar hover AND credits page button
     dashboard/
       page.tsx                          → Dashboard + pack history list
       new/
@@ -366,13 +387,15 @@ app/
       pack/[id]/
         page.tsx                        → Output page (titles, hook, thumbnails, social proof)
         CopyButton.tsx                  → Copy to clipboard client component
-        MarkAsUsedButton.tsx            → "Help VidUp learn →" flow (modal + submission states)
+        MarkAsUsedButton.tsx            → "Help VidUp learn" flow (modal + submission states)
       credits/
-        page.tsx                        → Buy credits (3 pack cards)
+        page.tsx                        → Credits page (balance card + Buy Credits / Credit History buttons)
+        CreditsTabs.tsx                 → Two modal-opening buttons + Credit History modal
         BuyButton.tsx                   → Cashfree checkout client component
-        CashfreeScript.tsx              → Loads Cashfree SDK once at page level
+        CashfreeScript.tsx              → Loads Cashfree SDK (imported by TopBar, not this page)
+        TransactionHistory.tsx          → Pill filters + 10-per-page pagination
         success/
-          page.tsx                      → Payment verification + credit addition
+          page.tsx                      → Payment verification + credit addition + credit_transactions insert
           SuccessRefresh.tsx            → router.refresh() after 800ms delay
       channels/
         page.tsx                        → Channel list (silent 7-day auto-refresh)
@@ -510,9 +533,24 @@ Only merge to main when tested and ready.
 - [x] Generation pipeline v2: new role, 6 new analysis fields, per-language rules, quality gates
 - [x] Thumbnail improvements: face_emotion, why_it_works, Canva URL
 - [x] Lucide React icons throughout entire app (no emojis anywhere)
-- [x] "Help VidUp learn →" flow: 7-day result collection (internal only, never shown to user)
+- [x] "Help VidUp learn" flow: 7-day result collection (internal only, never shown to user)
 - [x] Vercel cron job: daily fetch-results at 06:00 UTC
 - [x] Social proof sentences: 5 states × 2 conditions (personal vs platform blended)
+
+### Credits System Overhaul ✅ Complete (2026-05-30)
+- [x] DB migration: users table gains free_credits / purchased_credits / referral_credits / free_credits_reset_date / onboarding_dismissed columns
+- [x] credit_transactions table: full history log with type, credits, amount_paid, description; SELECT + INSERT RLS policies
+- [x] handle_new_user trigger updated to insert bonus row (+2) on every new signup
+- [x] All code migrated from legacy credits_balance to 3-column system
+- [x] Credits page renamed to "Credits" in sidebar (was "Buy Credits")
+- [x] Credits page: balance card always visible, two buttons open modals (Buy Credits / Credit History)
+- [x] BuyCreditsModal: shared component, opens from TopBar hover AND credits page
+- [x] TopBar: credits pill converts to hover popover (free / purchased / referral / total + Buy Credits button); credit details removed from profile dropdown
+- [x] CashfreeScript moved to TopBar (available on all dashboard pages)
+- [x] TransactionHistory: pill filters (All / Added / Used / Purchases / Referrals) + 10-per-page pagination
+- [x] Credit pack cards redesigned: large credits number, no tier names, per-credit price, pill buy buttons
+- [x] All button arrows (→) removed across entire app
+- [x] Bug fixes: void→await on all credit_transactions inserts, success page balance re-fetched fresh from DB, amount_paid stored in rupees not paise, generate route uses admin client for inserts
 
 ### Month 3 — Growth + Launch ⏳ Next
 - [ ] Learning data aggregation (anonymous, feeds generation engine)
@@ -548,8 +586,13 @@ Only merge to main when tested and ready.
 | Payment gateway | Cashfree (primary) | Already verified account |
 | Staging setup | Separate Vercel preview branch | Professional workflow |
 | Cashfree SDK loading | Page-level Script, not per-button | Per-button caused onReady to only fire on first instance |
-| Credit balance caching | noStore() + revalidatePath + 800ms delay | Three-layer fix needed for reliable instant update |
-| Admin client | Service role Supabase client | RLS has no INSERT policy on transactions; admin needed post-payment |
+| Credit balance caching | noStore() + router.refresh() + 800ms delay | revalidatePath during render is illegal; client-side router.refresh() is the correct pattern |
+| Admin client | Service role Supabase client | Used for all credit_transactions inserts — bypasses RLS, safe for server-side only |
+| credit_transactions inserts | Always await, never void | Vercel serverless kills unresolved promises when response is sent |
+| Balance display on success | Re-fetch fresh DB row after all writes | Computing from pre-update values is unreliable; fresh fetch is authoritative |
+| amount_paid in credit_transactions | Stored in rupees | Cashfree stores order amount in paise; divide by 100 before inserting |
+| Buy Credits modal | Shared BuyCreditsModal component | Modal triggered from TopBar hover and credits page — one source of truth |
+| CashfreeScript location | TopBar.tsx | Needs to load on all dashboard pages since Buy Credits modal can open from anywhere |
 | Customer phone (Cashfree) | Placeholder 9999999999 | Cashfree requires it; collect real number in future |
 | CRON_SECRET | Vercel env var, checked in fetch-results route | Prevents unauthorized triggering of cron job |
 
@@ -585,4 +628,4 @@ Go to Google Cloud Console → Vidup YT data extractor API key → change Applic
 
 ---
 
-*Last updated: 2026-05-30 — Channel system, generation pipeline v2, learning engine (7-day), social proof sentences, full Lucide icon audit all complete. Month 2.5 done. Month 3 (learning aggregation, referrals, SEO, launch) is next.*
+*Last updated: 2026-05-30 — Credits system overhauled: 3-column credit DB, full transaction history, TopBar hover popover, shared BuyCreditsModal, redesigned pack cards (no tier names), pill filters + pagination on history, all bug fixes (void→await, fresh balance fetch, paise→rupees). Month 3 (learning aggregation, referrals, SEO, launch) is next.*
