@@ -7,7 +7,6 @@ import {
   Sparkles,
   Tv2,
   Zap,
-  LogOut,
   ArrowLeftRight,
 } from "lucide-react";
 
@@ -19,18 +18,17 @@ const navItems = [
 ];
 
 interface Props {
-  credits: number;
   selectedChannel: { channel_id: string; channel_name: string } | null;
 }
 
-export default function DashboardSidebar({ credits, selectedChannel }: Props) {
+export default function DashboardSidebar({ selectedChannel }: Props) {
   const pathname = usePathname();
 
   return (
     <aside className="hidden sm:flex flex-col w-[240px] shrink-0 min-h-screen border-r border-[#F0F0F0] bg-white px-4 py-6">
 
       {/* Logo */}
-      <div className="px-2 mb-6">
+      <div className="px-2 mb-8">
         <Link href="/dashboard" className="text-[18px] font-bold text-[#111111] tracking-tight">
           vid<span className="text-[#E8192C]">up</span>
         </Link>
@@ -67,24 +65,6 @@ export default function DashboardSidebar({ credits, selectedChannel }: Props) {
         </div>
       )}
 
-      {/* Credit balance */}
-      <div className="px-2 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="inline-flex items-center gap-1.5 bg-[#FFF0F0] text-[#E8192C] text-[13px] font-bold px-3 py-1.5 rounded-full">
-            <Zap size={13} strokeWidth={2.5} />
-            {credits} credits
-          </div>
-          {credits <= 2 && (
-            <Link
-              href="/dashboard/credits"
-              className="text-[11px] font-semibold text-[#E8192C] hover:underline"
-            >
-              Top up →
-            </Link>
-          )}
-        </div>
-      </div>
-
       {/* Nav */}
       <nav className="flex flex-col gap-1 flex-1">
         {navItems.map(({ href, label, Icon }) => {
@@ -110,16 +90,6 @@ export default function DashboardSidebar({ credits, selectedChannel }: Props) {
         })}
       </nav>
 
-      {/* Sign out */}
-      <form action="/auth/signout" method="post">
-        <button
-          type="submit"
-          className="w-full text-left flex items-center gap-3 px-[14px] py-[10px] rounded-[10px] text-[14px] font-medium text-[#888888] hover:text-[#111111] hover:bg-[#F5F5F5] transition-all"
-        >
-          <LogOut size={18} strokeWidth={2} />
-          Sign out
-        </button>
-      </form>
     </aside>
   );
 }

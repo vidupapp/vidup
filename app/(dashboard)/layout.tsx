@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
+import TopBar from "./TopBar";
 
 export default async function DashboardLayout({
   children,
@@ -20,7 +21,7 @@ export default async function DashboardLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Credits
+  // Credits + email
   const { data: profile } = await supabase
     .from("users")
     .select("credits_balance")
@@ -28,8 +29,9 @@ export default async function DashboardLayout({
     .single() as { data: { credits_balance: number } | null; error: unknown };
 
   const credits = profile?.credits_balance ?? 2;
+  const email = user.email ?? "";
 
-  // Selected channel from cookie — admin client avoids PostgREST schema cache issues
+  // Selected channel
   const selectedChannelId = cookieStore.get("vidup_channel")?.value ?? null;
   let selectedChannel: { channel_id: string; channel_name: string } | null = null;
 
@@ -48,11 +50,11 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen flex" style={{ background: "#FAFAF8" }}>
-      <DashboardSidebar
-        credits={credits}
-        selectedChannel={selectedChannel}
-      />
-      <main className="flex-1 min-w-0">{children}</main>
+      <DashboardSidebar selectedChannel={selectedChannel} />
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopBar credits={credits} email={email} />
+        <main className="flex-1 min-w-0">{children}</main>
+      </div>
     </div>
   );
 }
