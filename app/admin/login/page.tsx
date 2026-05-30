@@ -1,12 +1,9 @@
+import { Suspense } from "react";
 import LoginForm from "./LoginForm";
 
 export const metadata = { title: "Admin Login | VidUp" };
 
-export default function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ setup?: string; next?: string }>;
-}) {
+export default function AdminLoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
@@ -16,7 +13,6 @@ export default function AdminLoginPage({
         className="w-full bg-white rounded-[20px] p-8"
         style={{ maxWidth: 400, boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}
       >
-        {/* Logo + Admin badge */}
         <div className="flex items-center gap-2 mb-8">
           <span className="w-2 h-2 rounded-full bg-[#E8192C] shrink-0" />
           <span className="text-[18px] font-bold text-[#111111] tracking-tight">
@@ -32,7 +28,9 @@ export default function AdminLoginPage({
         </h1>
         <p className="text-[14px] text-[#888888] mb-7">Access by invitation only.</p>
 
-        <LoginForm />
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
