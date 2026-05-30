@@ -36,6 +36,7 @@ export type Database = {
           credits_balance?: number;
           free_credits_used?: number;
           monthly_reset_date?: string;
+          referred_by?: string | null;
         };
       };
       channels: {

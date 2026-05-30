@@ -7,14 +7,16 @@ import {
   Sparkles,
   Tv2,
   Zap,
+  Gift,
   ArrowLeftRight,
 } from "lucide-react";
 
 const navItems = [
-  { href: "/dashboard",          label: "Dashboard",   Icon: LayoutDashboard },
-  { href: "/dashboard/new",      label: "New Pack",    Icon: Sparkles },
-  { href: "/dashboard/channels", label: "Channels",    Icon: Tv2 },
-  { href: "/dashboard/credits",  label: "Buy Credits", Icon: Zap },
+  { href: "/dashboard",           label: "Dashboard",   Icon: LayoutDashboard },
+  { href: "/dashboard/new",       label: "New Pack",    Icon: Sparkles },
+  { href: "/dashboard/channels",  label: "Channels",    Icon: Tv2 },
+  { href: "/dashboard/credits",   label: "Buy Credits", Icon: Zap },
+  { href: "/dashboard/referral",  label: "Refer & Earn", Icon: Gift },
 ];
 
 interface Props {

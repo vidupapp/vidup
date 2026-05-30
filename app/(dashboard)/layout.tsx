@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
 import TopBar from "./TopBar";
+import ReferralClaim from "./ReferralClaim";
 
 export default async function DashboardLayout({
   children,
@@ -55,6 +56,7 @@ export default async function DashboardLayout({
         <TopBar credits={credits} email={email} />
         <main className="flex-1 min-w-0">{children}</main>
       </div>
+      <ReferralClaim />
     </div>
   );
 }

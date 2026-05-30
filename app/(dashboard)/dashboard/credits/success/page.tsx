@@ -75,16 +75,16 @@ export default async function CreditsSuccessPage({
 
   let creditsAdded = 0;
   let newBalance = 0;
+  let referralBonusAdded = false;
 
   if (txn && txn.status !== "success") {
     creditsAdded = txn.credits_added;
 
-    // Fetch current balance using admin client (avoids Next.js fetch cache)
     const { data: profile } = await admin
       .from("users")
-      .select("credits_balance")
+      .select("credits_balance, referred_by")
       .eq("user_id", user.id)
-      .single() as { data: { credits_balance: number } | null; error: unknown };
+      .single() as { data: { credits_balance: number; referred_by: string | null } | null; error: unknown };
 
     const currentBalance = profile?.credits_balance ?? 0;
     newBalance = currentBalance + creditsAdded;
@@ -101,7 +101,36 @@ export default async function CreditsSuccessPage({
       .update({ credits_balance: newBalance })
       .eq("user_id", user.id);
 
-    // Bust the layout cache so router.refresh() sees fresh credits
+    // Referral bonus — only on first purchase
+    if (profile?.referred_by) {
+      const { count: successCount } = await admin
+        .from("transactions")
+        .select("transaction_id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("status", "success") as { count: number | null; data: null; error: unknown };
+
+      if (successCount === 1) {
+        // Add 5 bonus credits to buyer
+        newBalance = newBalance + 5;
+        await admin.from("users").update({ credits_balance: newBalance }).eq("user_id", user.id);
+
+        // Add 5 bonus credits to referrer
+        const { data: referrer } = await admin
+          .from("users")
+          .select("user_id, credits_balance")
+          .eq("referral_code", profile.referred_by)
+          .single() as { data: { user_id: string; credits_balance: number } | null; error: unknown };
+
+        if (referrer) {
+          await admin
+            .from("users")
+            .update({ credits_balance: referrer.credits_balance + 5 })
+            .eq("user_id", referrer.user_id);
+        }
+        referralBonusAdded = true;
+      }
+    }
+
     revalidatePath("/dashboard", "layout");
 
   } else if (txn?.status === "success") {
@@ -143,6 +172,11 @@ export default async function CreditsSuccessPage({
               ? `${creditsAdded} credits have been added to your account.`
               : "Your credits are ready to use."}
           </p>
+          {referralBonusAdded && (
+            <p className="text-[14px] text-[#16A34A] font-semibold mt-2">
+              + 5 referral bonus credits added 🎉
+            </p>
+          )}
         </div>
 
         {/* New balance */}
