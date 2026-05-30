@@ -375,7 +375,25 @@ export default function Home() {
           </div>
 
           {/* Credit packs */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-center">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 items-center">
+
+            {/* Free card */}
+            <div
+              className="relative flex flex-col bg-white rounded-2xl border border-[#F0F0F0]"
+              style={{ padding: "28px", boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)" }}
+            >
+              <p style={{ fontSize: "56px", fontWeight: 800, color: "#111111", lineHeight: 1 }}>2</p>
+              <p style={{ fontSize: "14px", fontWeight: 400, color: "#9B9B9B", marginTop: "4px" }}>credits / month</p>
+              <p style={{ fontSize: "13px", fontWeight: 400, color: "#9B9B9B", marginTop: "16px" }}>Resets on signup date</p>
+              <Link
+                href="/login"
+                className="w-full text-white font-semibold text-[15px] text-center rounded-full bg-[#111111] hover:bg-zinc-800 transition-all"
+                style={{ marginTop: "24px", paddingTop: "14px", paddingBottom: "14px", display: "block" }}
+              >
+                Get Started Free
+              </Link>
+            </div>
+
             {creditPacks.map((pack) => (
               <div
                 key={pack.type}
@@ -396,20 +414,15 @@ export default function Home() {
                     BEST VALUE
                   </span>
                 )}
-
-                {/* Credits number */}
                 <p style={{ fontSize: "56px", fontWeight: 800, color: "#111111", lineHeight: 1 }}>
                   {pack.credits}
                 </p>
-                {/* credits label */}
                 <p style={{ fontSize: "14px", fontWeight: 400, color: "#9B9B9B", marginTop: "4px" }}>
                   credits
                 </p>
-                {/* per credit price */}
                 <p style={{ fontSize: "13px", fontWeight: 400, color: "#9B9B9B", marginTop: "16px" }}>
                   {pack.perCredit} per credit
                 </p>
-                {/* buy button */}
                 <Link
                   href="/login"
                   className={`w-full text-white font-semibold text-[15px] text-center rounded-full transition-all ${
