@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Zap, Mail, Calendar } from "lucide-react";
+import { formatResetDate } from "@/lib/credits";
 
 export const metadata = { title: "Profile — VidUp" };
 
@@ -18,18 +19,23 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("credits_balance, signup_date, monthly_reset_date")
+    .select("free_credits, purchased_credits, referral_credits, free_credits_reset_date, signup_date")
     .eq("user_id", user.id)
     .single() as {
       data: {
-        credits_balance: number;
+        free_credits: number;
+        purchased_credits: number;
+        referral_credits: number;
+        free_credits_reset_date: string | null;
         signup_date: string;
-        monthly_reset_date: string;
       } | null;
       error: unknown;
     };
 
-  const credits = profile?.credits_balance ?? 0;
+  const freeCr = profile?.free_credits ?? 2;
+  const purchCr = profile?.purchased_credits ?? 0;
+  const refCr = profile?.referral_credits ?? 0;
+  const credits = freeCr + purchCr + refCr;
   const signupDate = profile?.signup_date ?? user.created_at;
 
   return (
@@ -75,16 +81,30 @@ export default async function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 px-6 py-4">
-            <Zap size={16} strokeWidth={2} className="text-[#E8192C] shrink-0" />
+          <div className="flex items-start gap-3 px-6 py-4">
+            <Zap size={16} strokeWidth={2} className="text-[#E8192C] shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-[12px] text-[#888888] mb-0.5">Credits remaining</p>
-              <p className="text-[14px] font-semibold text-[#E8192C]">{credits} credits</p>
+              <p className="text-[12px] text-[#888888] mb-1">Credits — {credits} total</p>
+              <div className="flex flex-col gap-1">
+                <p className="text-[13px] text-[#3D3D3D]">
+                  Free: <span className="font-semibold text-[#111111]">{freeCr}</span>
+                  {profile?.free_credits_reset_date && (
+                    <span className="text-[#AAAAAA]"> · resets {formatResetDate(profile.free_credits_reset_date)}</span>
+                  )}
+                </p>
+                <p className="text-[13px] text-[#3D3D3D]">
+                  Purchased: <span className="font-semibold text-[#111111]">{purchCr}</span>
+                  <span className="text-[#AAAAAA]"> · never expires</span>
+                </p>
+                {refCr > 0 && (
+                  <p className="text-[13px] text-[#3D3D3D]">
+                    Referral: <span className="font-semibold text-[#111111]">{refCr}</span>
+                    <span className="text-[#AAAAAA]"> · never expires</span>
+                  </p>
+                )}
+              </div>
             </div>
-            <Link
-              href="/dashboard/credits"
-              className="text-[13px] font-semibold text-[#E8192C] hover:underline shrink-0"
-            >
+            <Link href="/dashboard/credits" className="text-[13px] font-semibold text-[#E8192C] hover:underline shrink-0">
               Top up
             </Link>
           </div>

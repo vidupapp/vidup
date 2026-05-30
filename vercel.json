@@ -3,6 +3,10 @@
     {
       "path": "/api/fetch-results",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/reset-free-credits",
+      "schedule": "0 1 * * *"
     }
   ]
 }

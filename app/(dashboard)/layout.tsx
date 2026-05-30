@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
 import TopBar from "./TopBar";
 import ReferralClaim from "./ReferralClaim";
+import { type CreditBalance, EMPTY_BALANCE, getTotal } from "@/lib/credits";
 
 export default async function DashboardLayout({
   children,
@@ -25,11 +26,17 @@ export default async function DashboardLayout({
   // Credits + email
   const { data: profile } = await supabase
     .from("users")
-    .select("credits_balance")
+    .select("free_credits, purchased_credits, referral_credits, free_credits_reset_date")
     .eq("user_id", user.id)
-    .single() as { data: { credits_balance: number } | null; error: unknown };
+    .single() as { data: Partial<CreditBalance> | null; error: unknown };
 
-  const credits = profile?.credits_balance ?? 2;
+  const balance: CreditBalance = {
+    free_credits: profile?.free_credits ?? EMPTY_BALANCE.free_credits,
+    purchased_credits: profile?.purchased_credits ?? 0,
+    referral_credits: profile?.referral_credits ?? 0,
+    free_credits_reset_date: profile?.free_credits_reset_date ?? null,
+  };
+  const credits = getTotal(balance);
   const email = user.email ?? "";
 
   // Selected channel
@@ -53,7 +60,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen flex" style={{ background: "#FAFAF8" }}>
       <DashboardSidebar selectedChannel={selectedChannel} />
       <div className="flex-1 flex flex-col min-w-0">
-        <TopBar credits={credits} email={email} />
+        <TopBar credits={credits} balance={balance} email={email} />
         <main className="flex-1 min-w-0">{children}</main>
       </div>
       <ReferralClaim />

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Anthropic from "@anthropic-ai/sdk";
+import { type CreditBalance, getTotal, computeDeduction } from "@/lib/credits";
 import { extractVideoId, fetchVideoMetadata } from "@/lib/youtube";
 import {
   buildAnalysisPrompt,
@@ -43,14 +44,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
-    // Credit check
+    // Credit check (new 3-column system)
     const { data: profile } = await db
       .from("users")
-      .select("credits_balance")
+      .select("free_credits, purchased_credits, referral_credits")
       .eq("user_id", user.id)
-      .single() as { data: { credits_balance: number } | null; error: unknown };
+      .single() as { data: CreditBalance | null; error: unknown };
 
-    if (!profile || profile.credits_balance < 1) {
+    if (!profile || getTotal(profile) < 1) {
       return NextResponse.json({ error: "No credits remaining." }, { status: 402 });
     }
 
@@ -188,11 +189,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to save pack. Please try again." }, { status: 500 });
     }
 
-    // ── Step 5: Deduct credit ─────────────────────────────────
-    await db
-      .from("users")
-      .update({ credits_balance: profile.credits_balance - 1 })
-      .eq("user_id", user.id);
+    // ── Step 5: Deduct credit (order: free → purchased → referral) ───
+    const deduction = computeDeduction(profile);
+    if (deduction) {
+      await db.from("users").update(deduction).eq("user_id", user.id);
+    }
 
     return NextResponse.json({ pack_id: savedPack.pack_id });
   } catch (err) {

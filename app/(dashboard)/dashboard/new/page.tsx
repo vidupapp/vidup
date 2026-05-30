@@ -19,11 +19,11 @@ export default async function NewPackPage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("credits_balance")
+    .select("free_credits, purchased_credits, referral_credits")
     .eq("user_id", user.id)
-    .single() as { data: { credits_balance: number } | null; error: unknown };
+    .single() as { data: { free_credits: number; purchased_credits: number; referral_credits: number } | null; error: unknown };
 
-  const credits = profile?.credits_balance ?? 0;
+  const credits = (profile?.free_credits ?? 2) + (profile?.purchased_credits ?? 0) + (profile?.referral_credits ?? 0);
 
   const selectedChannelId = cookieStore.get("vidup_channel")?.value ?? null;
   let selectedChannel: {

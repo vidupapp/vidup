@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Check } from "lucide-react";
 import BuyButton from "./BuyButton";
 import CashfreeScript from "./CashfreeScript";
+import { formatResetDate } from "@/lib/credits";
 
 export const metadata = { title: "Buy Credits — VidUp" };
 
@@ -39,29 +40,67 @@ export default async function CreditsPage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("credits_balance")
+    .select("free_credits, purchased_credits, referral_credits, free_credits_reset_date")
     .eq("user_id", user.id)
-    .single() as { data: { credits_balance: number } | null; error: unknown };
+    .single() as {
+      data: {
+        free_credits: number;
+        purchased_credits: number;
+        referral_credits: number;
+        free_credits_reset_date: string | null;
+      } | null;
+      error: unknown;
+    };
 
-  const credits = profile?.credits_balance ?? 0;
+  const freeCr = profile?.free_credits ?? 2;
+  const purchCr = profile?.purchased_credits ?? 0;
+  const refCr = profile?.referral_credits ?? 0;
+  const credits = freeCr + purchCr + refCr;
 
   return (
     <div className="p-6 sm:p-8">
-      {/* Header */}
       <CashfreeScript />
 
       <div className="mb-8">
-        <h1
-          className="text-[24px] font-semibold text-[#111111]"
-          style={{ letterSpacing: "-0.5px" }}
-        >
+        <h1 className="text-[24px] font-semibold text-[#111111]" style={{ letterSpacing: "-0.5px" }}>
           Buy Credits
         </h1>
         <p className="text-[14px] text-[#888888] mt-0.5">
-          You currently have{" "}
-          <span className="text-[#E8192C] font-semibold">{credits} credit{credits !== 1 ? "s" : ""}</span>.
-          Credits never expire and stack when you buy more.
+          You have <span className="text-[#E8192C] font-semibold">{credits} credit{credits !== 1 ? "s" : ""}</span> remaining.
         </p>
+      </div>
+
+      {/* Credit breakdown */}
+      <div
+        className="bg-white rounded-xl border border-[#F0F0F0] px-5 py-4 mb-8 max-w-3xl"
+        style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
+      >
+        <p className="text-[12px] font-semibold text-[#888888] uppercase tracking-wider mb-3">Your balance</p>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] text-[#3D3D3D]">
+              Free credits
+              {profile?.free_credits_reset_date && (
+                <span className="text-[#AAAAAA] ml-1">· resets {formatResetDate(profile.free_credits_reset_date)}</span>
+              )}
+            </span>
+            <span className="text-[13px] font-semibold text-[#111111]">{freeCr}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] text-[#3D3D3D]">Purchased <span className="text-[#AAAAAA]">· never expires</span></span>
+            <span className="text-[13px] font-semibold text-[#111111]">{purchCr}</span>
+          </div>
+          {refCr > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-[#3D3D3D]">Referral earned <span className="text-[#AAAAAA]">· never expires</span></span>
+              <span className="text-[13px] font-semibold text-[#111111]">{refCr}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between border-t border-[#F0F0F0] pt-2 mt-1">
+            <span className="text-[13px] font-semibold text-[#111111]">Total</span>
+            <span className="text-[13px] font-bold text-[#E8192C]">{credits}</span>
+          </div>
+        </div>
       </div>
 
       {/* Pack cards */}

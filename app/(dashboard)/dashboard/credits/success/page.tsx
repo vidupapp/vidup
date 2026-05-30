@@ -82,12 +82,19 @@ export default async function CreditsSuccessPage({
 
     const { data: profile } = await admin
       .from("users")
-      .select("credits_balance, referred_by")
+      .select("free_credits, purchased_credits, referral_credits, referred_by")
       .eq("user_id", user.id)
-      .single() as { data: { credits_balance: number; referred_by: string | null } | null; error: unknown };
+      .single() as {
+        data: {
+          free_credits: number;
+          purchased_credits: number;
+          referral_credits: number;
+          referred_by: string | null;
+        } | null;
+        error: unknown;
+      };
 
-    const currentBalance = profile?.credits_balance ?? 0;
-    newBalance = currentBalance + creditsAdded;
+    const currentPurchased = profile?.purchased_credits ?? 0;
 
     // Mark transaction success
     await admin
@@ -95,11 +102,16 @@ export default async function CreditsSuccessPage({
       .update({ status: "success" })
       .eq("transaction_id", transactionId);
 
-    // Add credits
+    // Add purchased credits
     await admin
       .from("users")
-      .update({ credits_balance: newBalance })
+      .update({ purchased_credits: currentPurchased + creditsAdded })
       .eq("user_id", user.id);
+
+    // Compute new total for display
+    const freeCr = profile?.free_credits ?? 2;
+    const refCr = profile?.referral_credits ?? 0;
+    newBalance = freeCr + (currentPurchased + creditsAdded) + refCr;
 
     // Referral bonus — only on first purchase
     if (profile?.referred_by) {
@@ -110,21 +122,24 @@ export default async function CreditsSuccessPage({
         .eq("status", "success") as { count: number | null; data: null; error: unknown };
 
       if (successCount === 1) {
-        // Add 5 bonus credits to buyer
-        newBalance = newBalance + 5;
-        await admin.from("users").update({ credits_balance: newBalance }).eq("user_id", user.id);
+        // Buyer gets 5 to purchased_credits (per spec)
+        await admin
+          .from("users")
+          .update({ purchased_credits: currentPurchased + creditsAdded + 5 })
+          .eq("user_id", user.id);
+        newBalance += 5;
 
-        // Add 5 bonus credits to referrer
+        // Referrer gets 5 to referral_credits
         const { data: referrer } = await admin
           .from("users")
-          .select("user_id, credits_balance")
+          .select("user_id, referral_credits")
           .eq("referral_code", profile.referred_by)
-          .single() as { data: { user_id: string; credits_balance: number } | null; error: unknown };
+          .single() as { data: { user_id: string; referral_credits: number } | null; error: unknown };
 
         if (referrer) {
           await admin
             .from("users")
-            .update({ credits_balance: referrer.credits_balance + 5 })
+            .update({ referral_credits: (referrer.referral_credits ?? 0) + 5 })
             .eq("user_id", referrer.user_id);
         }
         referralBonusAdded = true;
@@ -139,11 +154,14 @@ export default async function CreditsSuccessPage({
 
     const { data: profile } = await admin
       .from("users")
-      .select("credits_balance")
+      .select("free_credits, purchased_credits, referral_credits")
       .eq("user_id", user.id)
-      .single() as { data: { credits_balance: number } | null; error: unknown };
+      .single() as {
+        data: { free_credits: number; purchased_credits: number; referral_credits: number } | null;
+        error: unknown;
+      };
 
-    newBalance = profile?.credits_balance ?? 0;
+    newBalance = (profile?.free_credits ?? 2) + (profile?.purchased_credits ?? 0) + (profile?.referral_credits ?? 0);
   }
 
   return (

@@ -13,8 +13,12 @@ export type Database = {
         Row: {
           user_id: string;
           email: string;
-          credits_balance: number;
-          free_credits_used: number;
+          credits_balance: number;        // legacy — kept for migration safety
+          free_credits_used: number;      // legacy
+          free_credits: number;           // new: resets monthly
+          purchased_credits: number;      // new: never expires
+          referral_credits: number;       // new: never expires
+          free_credits_reset_date: string | null;
           signup_date: string;
           monthly_reset_date: string;
           referral_code: string;
@@ -26,6 +30,10 @@ export type Database = {
           email: string;
           credits_balance?: number;
           free_credits_used?: number;
+          free_credits?: number;
+          purchased_credits?: number;
+          referral_credits?: number;
+          free_credits_reset_date?: string | null;
           signup_date?: string;
           monthly_reset_date?: string;
           referral_code: string;
@@ -35,6 +43,10 @@ export type Database = {
         Update: {
           credits_balance?: number;
           free_credits_used?: number;
+          free_credits?: number;
+          purchased_credits?: number;
+          referral_credits?: number;
+          free_credits_reset_date?: string | null;
           monthly_reset_date?: string;
           referred_by?: string | null;
         };
