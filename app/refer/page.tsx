@@ -6,12 +6,6 @@ export const metadata = {
   description: "Share VidUp with YouTube creators you know. Earn 5 credits for every friend who buys their first pack — no cap.",
 };
 
-const tiers = [
-  { referrals: 1,  credits: 5,  label: "1 friend",    packs: 5 },
-  { referrals: 5,  credits: 25, label: "5 friends",   packs: 25 },
-  { referrals: 10, credits: 50, label: "10 friends",  packs: 50 },
-];
-
 export default function ReferralProgramPage() {
   return (
     <div className="min-h-screen" style={{ background: "#0D0D0D" }}>
@@ -77,45 +71,71 @@ export default function ReferralProgramPage() {
         <p className="text-[13px] text-[#444444]">Free account · No credit card · Referral link ready instantly</p>
       </div>
 
-      {/* Earning potential */}
+      {/* Sample pack preview */}
       <div className="relative z-10 border-t border-white/6 py-20 px-6">
         <div className="max-w-3xl mx-auto">
           <p className="text-center text-[12px] font-bold uppercase tracking-[2.5px] text-[#555555] mb-4">
-            HOW MUCH YOU EARN
+            WHAT YOUR FRIEND GETS IN ONE CLICK
           </p>
           <p className="text-center text-[16px] text-[#555555] mb-12">
-            5 credits per referral · no cap · credits never expire
+            One pack = 3 titles + a hook script + 3 thumbnail ideas — all calibrated to real competitor data
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {tiers.map((tier, i) => (
-              <div
-                key={tier.referrals}
-                className={`rounded-2xl p-6 text-center ${
-                  i === 1
-                    ? "bg-[#E8192C] border border-[#E8192C]"
-                    : "bg-white/5 border border-white/10"
-                }`}
-              >
-                {i === 1 && (
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-white/70 mb-3">Most common</p>
-                )}
-                <p className={`text-[40px] font-extrabold mb-1 ${i === 1 ? "text-white" : "text-white"}`}
-                  style={{ letterSpacing: "-1.5px" }}>
-                  {tier.credits}
-                </p>
-                <p className={`text-[13px] font-semibold mb-1 ${i === 1 ? "text-white/80" : "text-[#666666]"}`}>
-                  credits from {tier.label}
-                </p>
-                <p className={`text-[12px] ${i === 1 ? "text-white/60" : "text-[#444444]"}`}>
-                  = {tier.packs} free packs
-                </p>
+          <div className="flex flex-col gap-4">
+            {/* Titles */}
+            <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#E8192C] mb-4">Titles — 3 options</p>
+              <div className="flex flex-col gap-3">
+                {[
+                  { text: "यह 5 mistakes मत करो | YouTube Growth Tips", score: 9, type: "Curiosity Gap" },
+                  { text: "Student Life में ₹50,000 कैसे save करें?", score: 8, type: "Emotional Trigger" },
+                  { text: "Maine यह try किया — results shocking थे", score: 8, type: "Personal Story" },
+                ].map((t, i) => (
+                  <div key={i} className="flex items-start justify-between gap-4 border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                    <p className="text-[14px] text-white leading-snug flex-1">{t.text}</p>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className="text-[12px] font-bold text-[#E8192C]">{t.score}/10</span>
+                      <span className="text-[11px] text-[#555555]">{t.type}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Hook */}
+            <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#E8192C] mb-3">Hook Script — opening line</p>
+              <p className="text-[15px] text-white leading-relaxed italic">
+                &ldquo;अगर आप भी यह गलती कर रहे हो, तो अगले 30 दिनों में आपका channel grow नहीं होगा — मैंने खुद यह सीखा ₹20,000 waste करने के बाद।&rdquo;
+              </p>
+              <p className="text-[12px] text-[#555555] mt-3">+ full 45-second spoken script, tension builder, payoff promise</p>
+            </div>
+
+            {/* Thumbnail */}
+            <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#E8192C] mb-3">Thumbnail idea — 1 of 3</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[11px] text-[#555555] mb-1">Text overlay</p>
+                  <div className="bg-[#0D0D0D] border border-white/10 rounded-lg px-3 py-2 text-center">
+                    <p className="text-[16px] font-extrabold text-white">यह मत करो</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[11px] text-[#555555] mb-1">Face emotion</p>
+                  <p className="text-[13px] text-white">Shocked + regretful</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[11px] text-[#555555] mb-1">Layout</p>
+                  <p className="text-[13px] text-[#888888]">Face left, bold red text right, dark background — urgency and contrast</p>
+                </div>
+              </div>
+              <p className="text-[12px] text-[#555555] mt-3 border-t border-white/5 pt-3">+ Canva template link included</p>
+            </div>
           </div>
 
           <p className="text-center text-[13px] text-[#444444] mt-6">
-            1 credit = 1 complete pack (3 titles + hook script + 3 thumbnail ideas)
+            Output language matches the creator&apos;s choice — Hindi, Marathi, Tamil, Telugu + 6 more
           </p>
         </div>
       </div>
