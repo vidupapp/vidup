@@ -152,7 +152,7 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
-          type: "purchase" | "free_reset" | "referral" | "bonus" | "generation";
+          type: "purchase" | "free_reset" | "referral" | "bonus" | "generation" | "expired";
           credits: number;
           amount_paid: number;
           description: string | null;
@@ -161,7 +161,7 @@ export type Database = {
         Insert: {
           id?: string;
           user_id: string;
-          type: "purchase" | "free_reset" | "referral" | "bonus" | "generation";
+          type: "purchase" | "free_reset" | "referral" | "bonus" | "generation" | "expired";
           credits: number;
           amount_paid?: number;
           description?: string | null;

@@ -15,9 +15,9 @@ export async function GET(req: NextRequest) {
   // Reset users whose reset date has passed
   const { data: due } = await admin
     .from("users")
-    .select("user_id, signup_date, free_credits_reset_date")
+    .select("user_id, signup_date, free_credits_reset_date, free_credits")
     .lte("free_credits_reset_date", now) as {
-      data: { user_id: string; signup_date: string; free_credits_reset_date: string }[] | null;
+      data: { user_id: string; signup_date: string; free_credits_reset_date: string; free_credits: number }[] | null;
       error: unknown;
     };
 
@@ -37,6 +37,17 @@ export async function GET(req: NextRequest) {
     const currentReset = new Date(user.free_credits_reset_date);
     const nextReset = new Date(currentReset);
     nextReset.setMonth(nextReset.getMonth() + 1);
+
+    // Record expiry of unused free credits before overwriting
+    if (user.free_credits > 0) {
+      void admin.from("credit_transactions").insert({
+        user_id: user.user_id,
+        type: "expired",
+        credits: -user.free_credits,
+        amount_paid: 0,
+        description: "Unused free credits lapsed",
+      });
+    }
 
     await admin
       .from("users")

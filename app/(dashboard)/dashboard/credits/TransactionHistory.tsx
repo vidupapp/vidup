@@ -3,10 +3,10 @@
 import { useState } from "react";
 import {
   ShoppingCart, RefreshCw, Users, Gift, Sparkles,
-  Receipt, ChevronDown,
+  Receipt, ChevronDown, Clock,
 } from "lucide-react";
 
-type TxType = "purchase" | "free_reset" | "referral" | "bonus" | "generation";
+type TxType = "purchase" | "free_reset" | "referral" | "bonus" | "generation" | "expired";
 
 interface Transaction {
   id: string;
@@ -53,6 +53,12 @@ const TYPE_CONFIG: Record<TxType, {
     color: "#E8192C",
     bgColor: "#FFF0F0",
   },
+  expired: {
+    icon: <Clock size={18} strokeWidth={2} />,
+    label: "Free credits expired",
+    color: "#888888",
+    bgColor: "#F5F5F5",
+  },
 };
 
 function formatDate(iso: string) {
@@ -66,6 +72,7 @@ function getDescription(tx: Transaction): string {
   if (tx.type === "free_reset") return "Free monthly credits added";
   if (tx.type === "referral") return "Friend purchased a pack";
   if (tx.type === "bonus") return "Welcome credits";
+  if (tx.type === "expired") return "Unused free credits lapsed";
   return "";
 }
 
