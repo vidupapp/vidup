@@ -86,28 +86,73 @@ function formatAudience(raw: string | string[]): string {
 // ── Language rules per language ───────────────────────────────
 
 const LANGUAGE_RULES: Record<string, string> = {
-  Hindi: `HINDI LANGUAGE RULES (non-negotiable):
+  Hindi: `HINDI LANGUAGE RULES (STRICT):
 
-You are writing for a Hindi YouTube creator. Natural Hinglish — not textbook Hindi.
+You are writing for a Hindi YouTube creator.
+Natural conversational Hinglish — as spoken by creators from Delhi/Mumbai/UP.
 
-→ Mix Hindi and English naturally. Think like a 25-year-old creator from Delhi/Mumbai.
-→ NEVER use Urdu-heavy words. NEVER write formal/bookish Hindi.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, upload, monetize, niche
+SCRIPT MIXING RULE:
+→ Mix Hindi and English naturally
+→ NEVER use Urdu-heavy words
+→ Conversational Hindi not textbook Hindi
 
-✅ Correct Hinglish style:
-"यह 3 mistakes मत करो | YouTube Growth Tips"
-"Student life में ₹50,000 कैसे save करें?"
-"Maine यह try किया — results shocking थे"
-"मेरे channel को 1 लाख subscribers कैसे मिले"
+REGISTER:
+→ 25-year-old creator from Delhi/Mumbai
+→ WhatsApp tone not newspaper tone
+→ Short punchy sentences
 
-❌ WRONG — too formal/bookish:
-"युवाओं के लिए धन संचय के उपाय"
-"आज हम आपको बताएंगे कि किस प्रकार"
+BANNED FORMAL/URDU WORDS:
+शायद → use शायद is ok but prefer "लगता है"
+मगर → use लेकिन or पर
+फ़िक्र → use चिंता
+ज़रूर → use ज़रूर is ok
+इस्तेमाल → use use करो
 
-Grammar rules:
-→ Use casual verb forms: करो (not करें), बताओ (not बताएं)
-→ Short punchy sentences — Hindi + English alternating feels natural
-→ FINAL CHECK: Would a Delhi/Mumbai 25-year-old say this? Feels like WhatsApp? No Urdu words?`,
+CONNECTOR WORDS:
+and → और / भी
+but → लेकिन / पर
+so → तो / इसलिए
+because → क्योंकि
+then → फिर / तब
+now → अब
+today → आज
+
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche,
+beginners, professional, tutorial
+
+NATURAL HINGLISH EXAMPLES:
+✅ "यह 3 mistakes मत करो | YouTube Tips"
+✅ "Student life में ₹50,000 कैसे save करें?"
+✅ "मैंने यह try किया, results shocking थे"
+✅ "चलो शुरू करते हैं"
+✅ "सच बताऊं तो"
+
+WRONG:
+❌ Urdu-heavy formal language
+❌ Textbook Hindi verb forms
+❌ "आप जानते होंगे कि" (too formal)
+
+GRAMMAR RULES:
+→ Use करो not कीजिए (casual preferred)
+→ Short sentences max 15 words
+→ Active voice always
+→ Gender match if channel owner known
+
+SPELLING RULES:
+→ Double check anusvara (ं) placement
+→ Halant (्) must be correct
+→ No missing matras
+
+FINAL CHECK:
+→ Read aloud — sounds like real creator?
+→ Zero Urdu-heavy words
+→ Grammar correct
+→ Natural Hinglish flow`,
 
   Marathi: `MARATHI LANGUAGE RULES (non-negotiable):
 
@@ -139,181 +184,552 @@ Grammar rules:
 → Key markers: मी (I), तुम्ही (you), आहे (is), नाही (no), कसं (how), काय (what)
 → FINAL CHECK: Zero Hindi words. Would a Pune creator say this? Grammar correct?`,
 
-  Tamil: `TAMIL LANGUAGE RULES (non-negotiable):
+  Tamil: `TAMIL LANGUAGE RULES (STRICT):
 
-You are writing for a Tamil YouTube creator. Natural Tanglish — spoken Tamil from Chennai/Coimbatore.
+You are writing for a Tamil YouTube creator.
+Natural spoken Tamil (Tanglish) as used by creators from Chennai/Coimbatore/Madurai.
 
-→ NEVER mix Telugu, Kannada, or Hindi words. Tamil only.
-→ Colloquial Tamil verb endings, not formal written Tamil.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, niche
+SCRIPT MIXING RULE:
+→ Mix Tamil and English ONLY
+→ NEVER use Telugu, Kannada or Hindi words
+→ Spoken Tamil not written formal Tamil
 
-✅ Correct Tanglish style:
-"இந்த mistake பண்ணாதீங்க | YouTube Tips"
-"Student-ஆ இருக்கும்போது ₹50,000 save பண்றது எப்படி?"
-"என் channel-க்கு 1 lakh subscribers வந்தது எப்படி"
+BANNED FORMAL WORDS:
+செய்கிறார் → use செய்றாங்க (spoken)
+இருக்கிறது → use இருக்கு (spoken)
+வருகிறது → use வருது (spoken)
+போகிறது → use போகுது (spoken)
+சொல்கிறேன் → use சொல்றேன் (spoken)
 
-❌ WRONG — too formal:
-"வருமான சேமிப்பிற்கான வழிமுறைகள்"
-"இளைஞர்களுக்கான நிதி மேலாண்மை"
+SPOKEN TAMIL VERB FORMS:
+பண்றது ✅ not செய்வது ❌
+இருக்கு ✅ not இருக்கிறது ❌
+வந்துச்சு ✅ not வந்தது ❌
+சொல்லிட்டேன் ✅ not சொன்னேன் ❌
+கொடுக்கணும் ✅ not கொடுக்க வேண்டும் ❌
 
-Grammar rules:
-→ Use spoken endings: பண்றது (not செய்வது), இருக்கு (not இருக்கிறது), வந்துச்சு (not வந்தது)
-→ Tamil script for Tamil words, English script for English words. Never transliterate English.
-→ FINAL CHECK: Would a Chennai creator say this naturally? No Telugu/Kannada/Hindi words?`,
+CONNECTOR WORDS:
+and → ம் / -உம்
+but → ஆனா
+so → அதனால
+because → ஏன்னா
+then → அப்புறம்
+now → இப்போ
+today → இன்னிக்கு
 
-  Telugu: `TELUGU LANGUAGE RULES (non-negotiable):
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche,
+tutorial, design, beginners
 
-You are writing for a Telugu YouTube creator. Natural Tenglish from Hyderabad/Vijayawada.
+NATURAL TANGLISH EXAMPLES:
+✅ "இந்த mistake பண்ணாதீங்க | YouTube Tips"
+✅ "இன்னிக்கு நான் சொல்றது உங்களுக்கு useful-ஆ இருக்கும்"
+✅ "ஆனா ஒரு secret இருக்கு"
+✅ "சரி, start பண்ணலாம்"
 
-→ NEVER mix Tamil, Kannada, or Hindi words. Telugu only.
-→ Colloquial Telugu, not formal written Telugu.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, niche
+WRONG:
+❌ Written Tamil formal forms
+❌ Telugu or Hindi words
+❌ Transliterating English into Tamil script
 
-✅ Correct Tenglish style:
-"ఈ mistake చేయకండి | YouTube Growth Tips"
-"Student గా ఉన్నప్పుడు ₹50,000 ఎలా save చేయాలి?"
-"నా channel కి 1 lakh subscribers ఎలా వచ్చాయి"
+GRAMMAR RULES:
+→ Subject-Object-Verb order (Tamil)
+→ Spoken contractions are natural
+→ Short sentences max 15 words
+→ End hooks with strong question or statement
 
-❌ WRONG — too formal:
-"ఆదాయ పొదుపు మార్గదర్శకాలు"
-"యువతకు ఆర్థిక నిర్వహణ పద్ధతులు"
+SCRIPT RULE:
+→ Tamil script for Tamil words
+→ English script for English words
+→ Never Tamil script for English words
 
-Grammar rules:
-→ Casual verb forms: చేయి (not చేయండి), చెప్పు (not చెప్పండి)
-→ Hyderabad creators naturally mix some Urdu influence — acceptable if channel is from there.
-→ FINAL CHECK: Would a Hyderabad/Vijayawada creator say this? No Tamil words?`,
+FINAL CHECK:
+→ Read aloud — Chennai creator would say this?
+→ Spoken Tamil forms only
+→ No Telugu/Kannada/Hindi contamination
+→ Script mixing is correct`,
 
-  Kannada: `KANNADA LANGUAGE RULES (non-negotiable):
+  Telugu: `TELUGU LANGUAGE RULES (STRICT):
 
-You are writing for a Kannada YouTube creator. Natural Kanglish from Bangalore/Mysore.
+You are writing for a Telugu YouTube creator.
+Natural spoken Telugu (Tenglish) as used by creators from Hyderabad/Vijayawada/Vizag.
 
-→ NEVER mix Telugu, Tamil, or Hindi words. Kannada only.
-→ Conversational Kannada, not formal written Kannada.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, startup, tech
+SCRIPT MIXING RULE:
+→ Mix Telugu and English ONLY
+→ NEVER use Tamil, Kannada or Hindi words
+→ Spoken Telugu not formal written Telugu
 
-✅ Correct Kanglish style:
-"ಈ mistake ಮಾಡಬೇಡಿ | YouTube Growth Tips"
-"Student ಆಗಿದ್ದಾಗ ₹50,000 ಹೇಗೆ save ಮಾಡಬೇಕು?"
-"ನನ್ನ channel ಗೆ 1 lakh subscribers ಹೇಗೆ ಬಂತು"
+BANNED FORMAL WORDS:
+చేస్తున్నారు → prefer చేస్తున్నాం (casual)
+చెప్పుచున్నాను → use చెప్తున్నాను (spoken)
 
-❌ WRONG — too formal:
-"ಆದಾಯ ಉಳಿತಾಯದ ಮಾರ್ಗದರ್ಶನ"
+SPOKEN TELUGU FORMS:
+చేయి ✅ not చేయండి ❌ (casual preferred)
+చెప్పు ✅ not చెప్పండి ❌
+చూడు ✅ not చూడండి ❌
+తెలుసా ✅ not తెలుసా? (same)
+వస్తుంది ✅ not వచ్చుచున్నది ❌
 
-Grammar rules:
-→ Casual verb endings: ಮಾಡು (not ಮಾಡಿ), ಹೇಳು (not ಹೇಳಿ)
-→ Bangalore tech creators mix more English — appropriate for tech/startup content.
-→ FINAL CHECK: Would a Bangalore creator say this? No Telugu/Tamil/Hindi words?`,
+CONNECTOR WORDS:
+and → మరియు / కూడా
+but → కానీ / అయితే
+so → అందుకే / అందువల్ల
+because → ఎందుకంటే
+then → అప్పుడు
+now → ఇప్పుడు
+today → ఈరోజు
 
-  Bengali: `BENGALI LANGUAGE RULES (non-negotiable):
+HYDERABADI NOTE:
+→ Hyderabad creators naturally mix some Urdu/Hindi words
+→ Only acceptable if channel is specifically Hyderabadi audience
+→ For general Telugu — avoid Hindi mixing
 
-You are writing for a Bengali YouTube creator. Natural Benglish from Kolkata/Dhaka.
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche,
+tutorial, design, beginners
 
-→ CRITICAL: NEVER mix Hindi words — this is the most common error in Bengali content.
-→ Conversational Bengali, not formal Sadhu Bhasha.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, niche
+NATURAL TENGLISH EXAMPLES:
+✅ "ఈ mistake చేయకండి | YouTube Tips"
+✅ "ఎవరూ చెప్పని secret ఉంది"
+✅ "మొదలు పెట్టాలా? సరే చెప్తాను"
+✅ "Results చాలా shocking గా ఉన్నాయి"
 
-✅ Correct Benglish style:
-"এই mistake করবেন না | YouTube Growth Tips"
-"Student হিসেবে ₹50,000 কীভাবে save করবেন?"
-"আমার channel এ 1 lakh subscribers কীভাবে এলো"
+WRONG:
+❌ Formal written Telugu
+❌ Tamil words leaking in
+❌ Sanskrit-heavy vocabulary
 
-❌ WRONG — too formal or Hindi leaked:
-"অর্থ সঞ্চয়ের পথনির্দেশিকা"
-Any Hindi words whatsoever
+GRAMMAR RULES:
+→ Verb at end of sentence (Telugu SOV)
+→ Gender agreement for past tense
+→ Casual forms preferred throughout
+→ Short sentences max 15 words
 
-Grammar rules:
-→ Casual verb forms: করো (not করুন), বলো (not বলুন)
-→ Bengali script for Bengali, English script for English. Never transliterate.
-→ FINAL CHECK: Would a Kolkata creator say this naturally? Zero Hindi words?`,
+SCRIPT RULE:
+→ Telugu script for Telugu words
+→ English script for English words
+→ Never Telugu script for English words
 
-  Gujarati: `GUJARATI LANGUAGE RULES (non-negotiable):
+FINAL CHECK:
+→ Vijayawada creator would say this?
+→ No Tamil/Kannada/Hindi words
+→ Spoken forms throughout
+→ Grammar correct`,
 
-You are writing for a Gujarati YouTube creator. Natural Gujlish from Ahmedabad/Surat.
+  Kannada: `KANNADA LANGUAGE RULES (STRICT):
 
-→ NEVER mix Hindi or Marathi words. Gujarati only.
-→ Conversational Gujarati with a business-friendly tone.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, profit, loss, trade, deal, market
+You are writing for a Kannada YouTube creator.
+Natural spoken Kannada (Kanglish) as used by creators from Bangalore/Mysore/Hubli.
 
-✅ Correct Gujlish style:
-"આ mistake ન કરો | YouTube Growth Tips"
-"Student તરીકે ₹50,000 કેવી રીતે save કરવા?"
-"મારી channel ને 1 lakh subscribers કેવી રીતે મળ્યા"
+SCRIPT MIXING RULE:
+→ Mix Kannada and English ONLY
+→ NEVER use Telugu, Tamil or Hindi words
+→ Spoken Kannada not formal written Kannada
 
-❌ WRONG — too formal or Hindi mixed:
-"નાણાકીય બચત માટેના માર્ગદર્શન"
-Any Hindi words
+BANNED FORMAL WORDS:
+ಮಾಡುತ್ತಿದ್ದಾರೆ → use ಮಾಡ್ತಾರೆ (spoken)
+ಹೇಳುತ್ತೇನೆ → use ಹೇಳ್ತೇನೆ (spoken)
+ಇರುತ್ತದೆ → use ಇರುತ್ತೆ (spoken)
+ಹೋಗುತ್ತದೆ → use ಹೋಗುತ್ತೆ (spoken)
 
-Grammar rules:
-→ Casual forms: કરો (do — casual), થઈ ગયું (it happened — natural)
-→ Finance/business English terms are especially natural for Gujarati audiences.
-→ FINAL CHECK: Would an Ahmedabad creator say this? No Hindi/Marathi words?`,
+SPOKEN KANNADA FORMS:
+ಮಾಡು ✅ not ಮಾಡಿ ❌ (casual)
+ಹೇಳು ✅ not ಹೇಳಿ ❌
+ನೋಡು ✅ not ನೋಡಿ ❌
+ಮಾಡ್ತೇನೆ ✅ not ಮಾಡುತ್ತೇನೆ ❌
+ಇರುತ್ತೆ ✅ not ಇರುತ್ತದೆ ❌
 
-  Malayalam: `MALAYALAM LANGUAGE RULES (non-negotiable):
+CONNECTOR WORDS:
+and → ಮತ್ತು / ಕೂಡ
+but → ಆದ್ರೆ
+so → ಅದಕ್ಕೆ
+because → ಯಾಕಂದ್ರೆ
+then → ಆಮೇಲೆ
+now → ಈಗ
+today → ಇವತ್ತು
 
-You are writing for a Malayalam YouTube creator. Natural Manglish from Kerala.
+BANGALORE TECH NOTE:
+→ Bangalore creators mix more English, especially for tech/startup content
+→ Higher English ratio is natural for tech category channels
 
-→ NEVER mix Tamil, Telugu, or Hindi words. Malayalam only.
-→ Conversational Malayalam, not formal written Malayalam.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, niche, Gulf (highly relatable in Kerala context)
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, startup, tech,
+tutorial, design, beginners
 
-✅ Correct Manglish style:
-"ഈ mistake ചെയ്യരുത് | YouTube Growth Tips"
-"Student ആയിരിക്കുമ്പോൾ ₹50,000 എങ്ങനെ save ചെയ്യാം?"
-"എന്റെ channel ൽ 1 lakh subscribers എങ്ങനെ വന്നു"
+NATURAL KANGLISH EXAMPLES:
+✅ "ಈ mistake ಮಾಡಬೇಡಿ | YouTube Tips"
+✅ "ಯಾರೂ ಹೇಳದ secret ಇದೆ"
+✅ "ಶುರು ಮಾಡೋಣ" (not शुरू)
+✅ "Results ತುಂಬಾ shocking ಆಗಿತ್ತು"
 
-❌ WRONG — too formal:
-"സാമ്പത്തിക സമ്പാദ്യത്തിനുള്ള മാർഗ്ഗനിർദ്ദേശം"
+WRONG:
+❌ Telugu or Tamil words
+❌ Formal written Kannada
+❌ Hindi words (ಶುರು is ok, शुरू is not)
 
-Grammar rules:
-→ Casual verb forms: ചെയ്യൂ (do), ചെയ്തു (did), ചെയ്യണം (must do)
-→ Gulf/NRI and finance content resonates strongly with Kerala audiences.
-→ FINAL CHECK: Would a Kerala creator say this? No Tamil/Telugu/Hindi words?`,
+GRAMMAR RULES:
+→ SOV sentence order
+→ Spoken contractions natural
+→ Short sentences max 15 words
+→ Casual verb forms throughout
 
-  Punjabi: `PUNJABI LANGUAGE RULES (non-negotiable):
+SCRIPT RULE:
+→ Kannada script for Kannada words
+→ English script for English words
 
-You are writing for a Punjabi YouTube creator. Energetic Punglish from Punjab/Chandigarh.
+FINAL CHECK:
+→ Bangalore creator would say this?
+→ No Telugu/Tamil/Hindi contamination
+→ Spoken forms throughout
+→ Grammar correct`,
 
-→ Some Hindi mixing is natural and acceptable in Punjabi — unlike other regional languages.
-→ Conversational Punjabi, energetic and expressive tone.
-→ English words that always stay in English: save, invest, tips, results, mistake, challenge, business, income, salary, budget, plan, secret, hack, score, trending, viral, growth, subscriber, content, channel, niche
+  Bengali: `BENGALI LANGUAGE RULES (STRICT):
 
-✅ Correct Punglish style:
-"ਇਹ mistake ਨਾ ਕਰੋ | YouTube Growth Tips"
-"Student ਹੁੰਦੇ ਹੋਏ ₹50,000 ਕਿਵੇਂ save ਕਰੀਏ?"
-"ਮੇਰੇ channel ਤੇ 1 lakh subscribers ਕਿਵੇਂ ਆਏ"
+You are writing for a Bengali YouTube creator.
+Natural spoken Bengali (Benglish) as used by creators from Kolkata/Dhaka area.
 
-❌ WRONG — too formal:
-"ਵਿੱਤੀ ਬੱਚਤ ਲਈ ਮਾਰਗਦਰਸ਼ਨ"
+SCRIPT MIXING RULE:
+→ Mix Bengali and English ONLY
+→ NEVER use Hindi words
+→ Spoken Bengali not formal Sadhu Bhasha
 
-Grammar rules:
-→ Energetic, expressive tone. Humour and casual banter are part of the culture.
-→ Use ਕਰੀਏ (let's do — engaging), ਸੱਚ ਦੱਸਾਂ (honest truth), ਯਾਰ (buddy — casual).
-→ FINAL CHECK: Would a Punjab/Chandigarh creator say this? Energetic tone? Grammar correct?`,
+BANNED FORMAL/SADHU BHASHA WORDS:
+করিতেছি → use করছি (spoken)
+বলিতেছি → use বলছি (spoken)
+যাইতেছি → use যাচ্ছি (spoken)
+করিয়াছি → use করেছি (spoken)
 
-  English: `ENGLISH LANGUAGE RULES (non-negotiable):
+SPOKEN BENGALI FORMS:
+করো ✅ not করুন ❌ (casual preferred)
+বলো ✅ not বলুন ❌
+দেখো ✅ not দেখুন ❌
+করছি ✅ not করিতেছি ❌
+যাচ্ছি ✅ not যাইতেছি ❌
 
-You are writing YouTube-native English — not corporate, not academic. Think MrBeast, Ali Abdaal, Marques Brownlee.
+CONNECTOR WORDS:
+and → আর / এবং
+but → কিন্তু / তবে
+so → তাই / সেজন্য
+because → কারণ
+then → তারপর
+now → এখন
+today → আজকে
 
-→ Punchy, specific, curiosity-driven titles. No vague words like "amazing", "best", "ultimate".
-→ Short sentences. Active voice only. Numbers in digits (7 not seven).
-→ Em dash (—) for dramatic pause works well.
-→ Indian English creators: slightly more conversational than academic but still natural.
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche,
+tutorial, design, beginners
 
-✅ Correct YouTube English:
-"I Made These 3 Mistakes — Don't Do What I Did"
-"How I Got 100K Subscribers (Honest Truth)"
-"Stop Using This YouTube Strategy in 2025"
-"Why Your Videos Get 0 Views (And How I Fixed It)"
+NATURAL BENGLISH EXAMPLES:
+✅ "এই mistake করবে না | YouTube Tips"
+✅ "কেউ বলে না এই secret"
+✅ "চলো শুরু করি"
+✅ "Results টা shocking ছিল"
 
-❌ WRONG — generic/corporate:
-"Tips and Tricks for YouTube Success"
-"How to Improve Your YouTube Channel Performance"
-"A Comprehensive Guide to YouTube Growth"
+WRONG:
+❌ Sadhu Bhasha formal forms
+❌ Hindi words leaking in
+❌ Urdu-heavy vocabulary
 
-Hook language rules:
-→ Start with "I", a number, or a provocative statement
-→ NEVER start with "In this video...", "Today we're going to...", "Welcome back..."
-→ FINAL CHECK: Would a top YouTube creator use this title? Specific? Under 70 characters?`,
+GRAMMAR RULES:
+→ SOV sentence order
+→ Spoken verb forms only
+→ Short sentences max 15 words
+→ Casual register throughout
+
+SCRIPT RULE:
+→ Bengali script for Bengali words
+→ English script for English words
+→ Never Bengali script for English words
+
+FINAL CHECK:
+→ Kolkata creator would say this?
+→ No Hindi contamination
+→ Spoken forms throughout
+→ Grammar correct`,
+
+  Gujarati: `GUJARATI LANGUAGE RULES (STRICT):
+
+You are writing for a Gujarati YouTube creator.
+Natural spoken Gujarati (Gujlish) as used by creators from Ahmedabad/Surat/Vadodara.
+
+SCRIPT MIXING RULE:
+→ Mix Gujarati and English ONLY
+→ NEVER use Hindi or Marathi words
+→ Spoken Gujarati not formal written
+
+BANNED FORMAL WORDS:
+કરવામાં આવ્યું → use કર્યું (spoken)
+બોલવામાં આવ્યું → use બોલ્યા (spoken)
+જવામાં આવ્યું → use ગયા (spoken)
+
+SPOKEN GUJARATI FORMS:
+કરો ✅ not કરવું જોઈએ ❌ (casual)
+કહો ✅ not કહેવું ❌
+જોઈ ✅ not જોવામાં ❌
+થઈ ગ્યું ✅ not થઈ ગયું ❌ (dialect)
+ખબર છે ✅ not જ્ઞાન છે ❌
+
+CONNECTOR WORDS:
+and → અને / ને
+but → પણ / પરંતુ
+so → તો / એટલે
+because → કારણ કે
+then → પછી
+now → હવે
+today → આજે
+
+BUSINESS NOTE:
+→ Gujarati creators often cover business/finance
+→ These English terms especially natural:
+   profit, loss, margin, trade, deal, market, business, income, invest
+
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche,
+profit, loss, trade, market
+
+NATURAL GUJLISH EXAMPLES:
+✅ "આ mistake ન કરો | Business Tips"
+✅ "કોઈ નહીં કહે આ secret"
+✅ "ચાલો શરૂ કરીએ"
+✅ "Results જોઈને shock થઈ ગ્યા"
+
+WRONG:
+❌ Hindi words leaking in
+❌ Marathi words mixing
+❌ Overly formal Gujarati
+
+GRAMMAR RULES:
+→ SOV sentence order
+→ Casual contractions natural
+→ Short sentences max 15 words
+→ Business-friendly tone where relevant
+
+SCRIPT RULE:
+→ Gujarati script for Gujarati words
+→ English script for English words
+
+FINAL CHECK:
+→ Ahmedabad creator would say this?
+→ No Hindi/Marathi contamination
+→ Business-friendly where relevant
+→ Grammar correct`,
+
+  Malayalam: `MALAYALAM LANGUAGE RULES (STRICT):
+
+You are writing for a Malayalam YouTube creator.
+Natural spoken Malayalam (Manglish) as used by creators from Kerala.
+
+SCRIPT MIXING RULE:
+→ Mix Malayalam and English ONLY
+→ NEVER use Tamil, Telugu or Hindi words
+→ Spoken Malayalam not formal written
+
+BANNED FORMAL WORDS:
+ചെയ്യുന്നു → prefer ചെയ്യ്ണ് (very spoken)
+പറയുന്നു → use പറയ്ണ് (spoken)
+പോകുന്നു → use പോകുണ് (spoken)
+
+SPOKEN MALAYALAM FORMS:
+ചെയ്യൂ ✅ not ചെയ്യണം ❌ (casual)
+പറയൂ ✅ not പറഞ്ഞോ ❌
+നോക്കൂ ✅ not നോക്കണം ❌
+ഉണ്ട് ✅ not ഉണ്ടായിരിക്കുന്നു ❌
+ആണ് ✅ not ആകുന്നു ❌
+
+CONNECTOR WORDS:
+and → ഉം / കൂടെ
+but → പക്ഷേ / പക്ഷം
+so → അതുകൊണ്ട്
+because → കാരണം
+then → പിന്നെ
+now → ഇപ്പോൾ
+today → ഇന്ന്
+
+KERALA CONTEXT NOTE:
+→ Gulf/NRI references very relatable
+→ Finance and career content performs well
+→ Education and study abroad popular topics
+→ These topics have natural English mixing
+
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche,
+Gulf, abroad, visa, job, career
+
+NATURAL MANGLISH EXAMPLES:
+✅ "ഈ mistake ചെയ്യരുത് | YouTube Tips"
+✅ "ആരും പറയാത്ത secret ഉണ്ട്"
+✅ "നമുക്ക് തുടങ്ങാം"
+✅ "Results കണ്ടപ്പോൾ shocked ആയി"
+
+WRONG:
+❌ Tamil words (similar but different)
+❌ Hindi words
+❌ Overly formal written Malayalam
+❌ Sanskrit-heavy vocabulary
+
+GRAMMAR RULES:
+→ SOV sentence order
+→ Spoken contractions natural
+→ Short sentences max 15 words
+→ Gulf/career context where relevant
+
+SCRIPT RULE:
+→ Malayalam script for Malayalam words
+→ English script for English words
+
+FINAL CHECK:
+→ Kerala creator would say this?
+→ No Tamil/Telugu/Hindi contamination
+→ Spoken forms throughout
+→ Grammar correct`,
+
+  Punjabi: `PUNJABI LANGUAGE RULES (STRICT):
+
+You are writing for a Punjabi YouTube creator.
+Natural spoken Punjabi (Punglish) as used by creators from Punjab/Chandigarh/Ludhiana.
+
+SCRIPT MIXING RULE:
+→ Mix Punjabi and English primarily
+→ Some Hindi mixing acceptable (natural in Punjab region)
+→ Never force pure Punjabi
+→ Conversational energetic tone
+
+SPOKEN PUNJABI FORMS:
+ਕਰੋ ✅ casual and standard
+ਕਰੀਏ ✅ let's do (engaging)
+ਦੱਸੋ ✅ tell (casual)
+ਕੀਤਾ ✅ did (past masculine)
+ਕੀਤੀ ✅ did (past feminine)
+ਚੱਲੋ ✅ let's go (energetic)
+
+CONNECTOR WORDS:
+and → ਅਤੇ / ਤੇ
+but → ਪਰ
+so → ਇਸ ਲਈ / ਤਾਂ
+because → ਕਿਉਂਕਿ
+then → ਫਿਰ
+now → ਹੁਣ
+today → ਅੱਜ
+
+PUNJABI ENERGY NOTE:
+→ Punjabi content is more energetic and expressive than other languages
+→ Exclamation and enthusiasm natural
+→ Humour and casual banter welcome
+→ Direct and bold language works well
+
+ENGLISH WORDS KEPT IN ENGLISH:
+save, invest, tips, results, mistake,
+challenge, business, income, salary,
+budget, plan, secret, hack, score,
+trending, viral, growth, subscriber,
+content, channel, upload, niche,
+tutorial, design, beginners
+
+NATURAL PUNGLISH EXAMPLES:
+✅ "ਇਹ mistake ਨਾ ਕਰੋ | YouTube Tips"
+✅ "ਕੋਈ ਨਹੀਂ ਦੱਸਦਾ ਇਹ secret"
+✅ "ਚੱਲੋ ਸ਼ੁਰੂ ਕਰਦੇ ਆਂ"
+✅ "Results ਬਹੁਤ shocking ਸੀ ਯਾਰ"
+
+WRONG:
+❌ Overly formal Punjabi
+❌ Too much Hindi replacing Punjabi
+❌ Wrong Gurmukhi script characters
+
+GRAMMAR RULES:
+→ Gender agreement in past tense: ਕੀਤਾ (masculine) ਕੀਤੀ (feminine)
+→ Energetic short sentences
+→ Direct address to viewer natural
+→ Enthusiasm markers welcome (ਯਾਰ etc)
+
+SCRIPT RULE:
+→ Gurmukhi script for Punjabi words
+→ English script for English words
+
+FINAL CHECK:
+→ Punjab/Chandigarh creator would say this?
+→ Energetic and expressive tone
+→ Script correct throughout
+→ Grammar and gender correct`,
+
+  English: `ENGLISH LANGUAGE RULES (STRICT):
+
+You are writing for an English YouTube creator.
+YouTube-native English — creator style, not corporate or academic language.
+
+STYLE:
+→ Think MrBeast, Ali Abdaal, Nas Daily style
+→ Punchy, specific, curiosity-driven
+→ Every word earns its place
+→ No filler, no corporate speak
+
+BANNED PHRASES:
+❌ In this video I will show you
+❌ Today we are going to learn
+❌ Welcome back to my channel
+❌ In today's video
+❌ Make sure to like and subscribe
+❌ Tips and tricks for success
+❌ A comprehensive guide to
+❌ Everything you need to know about
+
+TITLE FORMULAS THAT WORK:
+→ Number + outcome: "7 Habits That 10X'd My Views"
+→ Curiosity gap: "Why Nobody Talks About This"
+→ Personal story: "I Tried This for 30 Days"
+→ Contrarian: "Stop Doing This (Do This Instead)"
+→ Specific + relatable: "How I Made ₹50K With Zero Subscribers"
+
+NATURAL EXAMPLES:
+✅ "I Made These 3 Mistakes. Learn From Me"
+✅ "How I Hit 100K (Honest Truth)"
+✅ "Stop Using This Strategy in 2025"
+✅ "The Only Script Template You Need"
+
+GRAMMAR RULES:
+→ Short sentences — under 15 words ideal
+→ Active voice always
+→ Numbers in digits (7 not seven)
+→ Questions must create genuine curiosity
+→ Under 70 characters for titles
+→ No Title Case — use Sentence case
+
+HOOK RULES:
+→ Start with I, a number, or bold statement
+→ Never start with In this video
+→ Never start with Today we
+→ Never start with Welcome back
+
+FINAL CHECK:
+→ Would MrBeast or Ali Abdaal use this?
+→ Specific enough to not be generic?
+→ Creates genuine curiosity?
+→ Under 70 characters?
+→ Grammar is punchy and correct?`,
 };
 
 // ── Call 1: Analysis Prompt ───────────────────────────────────
