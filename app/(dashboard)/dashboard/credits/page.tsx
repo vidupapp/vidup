@@ -4,7 +4,11 @@ import Link from "next/link";
 import { Zap, CheckCircle2, Users } from "lucide-react";
 import BuyButton from "./BuyButton";
 import CashfreeScript from "./CashfreeScript";
+import TransactionHistory from "./TransactionHistory";
 import { formatResetDate } from "@/lib/credits";
+import type { Database } from "@/lib/supabase/types";
+
+type CreditTx = Database["public"]["Tables"]["credit_transactions"]["Row"];
 
 export const metadata = { title: "Credits — VidUp" };
 
@@ -37,6 +41,15 @@ export default async function CreditsPage() {
   const purchCr = profile?.purchased_credits   ?? 0;
   const refCr   = profile?.referral_credits    ?? 0;
   const total   = freeCr + purchCr + refCr;
+
+  // Fetch credit transaction history
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: txHistory } = await (supabase as any)
+    .from("credit_transactions")
+    .select("id, type, credits, amount_paid, description, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(100) as { data: CreditTx[] | null; error: unknown };
 
   return (
     <div className="p-6 sm:p-8 max-w-3xl">
@@ -159,6 +172,9 @@ export default async function CreditsPage() {
           </Link>
         </div>
       </div>
+
+      {/* ── SECTION 5: Transaction history ───────────── */}
+      <TransactionHistory transactions={txHistory ?? []} />
 
     </div>
   );

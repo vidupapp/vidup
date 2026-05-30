@@ -43,6 +43,14 @@ export async function GET(req: NextRequest) {
       .update({ free_credits: 2, free_credits_reset_date: nextReset.toISOString() })
       .eq("user_id", user.user_id);
 
+    void admin.from("credit_transactions").insert({
+      user_id: user.user_id,
+      type: "free_reset",
+      credits: 2,
+      amount_paid: 0,
+      description: "Free monthly credits added",
+    });
+
     reset++;
   }
 
@@ -55,6 +63,14 @@ export async function GET(req: NextRequest) {
       .from("users")
       .update({ free_credits: 2, free_credits_reset_date: nextReset.toISOString() })
       .eq("user_id", user.user_id);
+
+    void admin.from("credit_transactions").insert({
+      user_id: user.user_id,
+      type: "free_reset",
+      credits: 2,
+      amount_paid: 0,
+      description: "Free monthly credits added",
+    });
 
     initialised++;
   }

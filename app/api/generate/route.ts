@@ -195,6 +195,15 @@ export async function POST(req: NextRequest) {
       await db.from("users").update(deduction).eq("user_id", user.id);
     }
 
+    // ── Step 6: Record credit transaction ────────────────────────────
+    void db.from("credit_transactions").insert({
+      user_id: user.id,
+      type: "generation",
+      credits: -1,
+      amount_paid: 0,
+      description: topic.trim().slice(0, 40),
+    });
+
     return NextResponse.json({ pack_id: savedPack.pack_id });
   } catch (err) {
     console.error("Unexpected generation error:", err);

@@ -69,9 +69,9 @@ export default async function CreditsSuccessPage({
   // Look up the pending transaction
   const { data: txn } = await admin
     .from("transactions")
-    .select("transaction_id, status, credits_added")
+    .select("transaction_id, status, credits_added, pack_type, amount")
     .eq("transaction_id", transactionId)
-    .single() as { data: { transaction_id: string; status: string; credits_added: number } | null; error: unknown };
+    .single() as { data: { transaction_id: string; status: string; credits_added: number; pack_type: string; amount: number } | null; error: unknown };
 
   let creditsAdded = 0;
   let newBalance = 0;
@@ -141,10 +141,38 @@ export default async function CreditsSuccessPage({
             .from("users")
             .update({ referral_credits: (referrer.referral_credits ?? 0) + 5 })
             .eq("user_id", referrer.user_id);
+
+          // Record referral reward for referrer
+          void admin.from("credit_transactions").insert({
+            user_id: referrer.user_id,
+            type: "referral",
+            credits: 5,
+            amount_paid: 0,
+            description: "Friend purchased a pack",
+          });
         }
+
+        // Record buyer bonus
+        void admin.from("credit_transactions").insert({
+          user_id: user.id,
+          type: "bonus",
+          credits: 5,
+          amount_paid: 0,
+          description: "Welcome credits",
+        });
+
         referralBonusAdded = true;
       }
     }
+
+    // Record purchase transaction
+    void admin.from("credit_transactions").insert({
+      user_id: user.id,
+      type: "purchase",
+      credits: creditsAdded + (referralBonusAdded ? 5 : 0),
+      amount_paid: txn.amount ?? 0,
+      description: txn.pack_type ?? null,
+    });
 
     revalidatePath("/dashboard", "layout");
 

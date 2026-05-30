@@ -148,6 +148,27 @@ export type Database = {
           results_fetched_at?: string | null;
         };
       };
+      credit_transactions: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: "purchase" | "free_reset" | "referral" | "bonus" | "generation";
+          credits: number;
+          amount_paid: number;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: "purchase" | "free_reset" | "referral" | "bonus" | "generation";
+          credits: number;
+          amount_paid?: number;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+      };
       results: {
         Row: {
           result_id: string;
