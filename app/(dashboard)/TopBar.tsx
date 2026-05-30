@@ -19,7 +19,7 @@ export default function TopBar({ credits, balance, email }: Props) {
   const [buyOpen, setBuyOpen]         = useState(false);
 
   const profileRef   = useRef<HTMLDivElement>(null);
-  const hideTimer    = useRef<ReturnType<typeof setTimeout>>();
+  const hideTimer    = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const initial = email.charAt(0).toUpperCase();
   const low     = credits <= 2;
