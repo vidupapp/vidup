@@ -51,7 +51,7 @@ export default function BuyCreditsModal({ onClose }: Props) {
             {[
               "1 credit = 1 complete pack (3 titles + 1 hook script + 3 thumbnail ideas)",
               "Free credits reset monthly on your signup date. Purchased credits never expire.",
-              "Refer a friend — you both earn 5 credits when they make their first purchase.",
+              "Refer a friend. You both earn 5 credits when they make their first purchase.",
             ].map((text) => (
               <div key={text} className="flex items-start gap-2.5">
                 <CheckCircle2 size={15} strokeWidth={2.5} className="text-[#E8192C] shrink-0 mt-0.5" />

@@ -116,7 +116,7 @@ export default function NewPackForm({ credits, channelId }: Props) {
                 {LOADING_STAGES[loadingStage]}
               </span>
             </div>
-            <p className="text-[13px] text-[#888888]">This takes about 15–30 seconds</p>
+            <p className="text-[13px] text-[#888888]">This takes about 15-30 seconds</p>
           </div>
         </div>
       )}
@@ -131,7 +131,7 @@ export default function NewPackForm({ credits, channelId }: Props) {
           <textarea
             required
             rows={3}
-            placeholder="Describe what your video is about in 1–2 lines. E.g. How I saved ₹1 lakh in 6 months on a ₹30k salary"
+            placeholder="Describe what your video is about in 1-2 lines. E.g. How I saved ₹1 lakh in 6 months on a ₹30k salary"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             className={`${inputBase} resize-y min-h-[96px] py-3 leading-relaxed ${topicFontClass}`}

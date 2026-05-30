@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CheckCircle2, XCircle, Zap, Sparkles } from "lucide-react";
 import SuccessRefresh from "./SuccessRefresh";
 
-export const metadata = { title: "Payment — VidUp" };
+export const metadata = { title: "Payment | VidUp" };
 
 const CASHFREE_BASE =
   process.env.NEXT_PUBLIC_CASHFREE_ENV === "production"

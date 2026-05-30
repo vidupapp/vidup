@@ -6,7 +6,7 @@ import type { Database } from "@/lib/supabase/types";
 import OnboardingCard from "./OnboardingCard";
 
 export const metadata = {
-  title: "Dashboard — VidUp",
+  title: "Dashboard | VidUp",
 };
 
 type Pack = Database["public"]["Tables"]["packs"]["Row"];

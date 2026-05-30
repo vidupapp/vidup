@@ -27,34 +27,34 @@ function getContextMsg(
   if (totalPacks >= 50) {
     // Blend personal + system data
     if (resultsCount >= 10) {
-      return `Built from ${resultsCount} of your real videos — this pack reflects what your audience actually clicks and watches.`;
+      return `Built from ${resultsCount} of your real videos. This pack reflects what your audience actually clicks and watches.`;
     }
     if (resultsCount >= 5) {
-      return `${resultsCount} of your videos have trained this pack alongside ${totalPacks} packs across VidUp — VidUp knows what your ${formattedSubscribers} ${language} audience responds to.`;
+      return `${resultsCount} of your videos have trained this pack alongside ${totalPacks} packs across VidUp. VidUp knows what your ${formattedSubscribers} ${language} audience responds to.`;
     }
     if (resultsCount >= 1) {
-      return `Generated using ${resultsCount} of your real videos and patterns from ${totalPacks} packs on VidUp — getting more accurate every time.`;
+      return `Generated using ${resultsCount} of your real videos and patterns from ${totalPacks} packs on VidUp. Getting more accurate every time.`;
     }
     if (isFirstPack) {
-      return `Your first pack is ready — generated using patterns from ${totalPacks}+ packs on VidUp. Add your video link after uploading to make yours even more personalised.`;
+      return `Your first pack is ready. Generated using patterns from ${totalPacks}+ packs on VidUp. Add your video link after uploading to make yours even more personalised.`;
     }
-    return `Pack generated using your ${channelName ?? "channel"} data and patterns from ${totalPacks} packs across VidUp — add your video link after uploading so VidUp can learn what works specifically for your audience.`;
+    return `Pack generated using your ${channelName ?? "channel"} data and patterns from ${totalPacks} packs across VidUp. Add your video link after uploading so VidUp can learn what works specifically for your audience.`;
   }
 
   // Personal-only states (total_packs < 50)
   if (resultsCount >= 10) {
-    return `Built from ${resultsCount} of your real videos — this pack reflects what your audience actually clicks and watches.`;
+    return `Built from ${resultsCount} of your real videos. This pack reflects what your audience actually clicks and watches.`;
   }
   if (resultsCount >= 5) {
-    return `${resultsCount} of your videos have trained this pack — VidUp is learning what your ${formattedSubscribers} ${language} audience responds to.`;
+    return `${resultsCount} of your videos have trained this pack. VidUp is learning what your ${formattedSubscribers} ${language} audience responds to.`;
   }
   if (resultsCount >= 1) {
-    return `Generated using your channel data and ${resultsCount} of your real videos — your packs are getting more accurate every time.`;
+    return `Generated using your channel data and ${resultsCount} of your real videos. Your packs are getting more accurate every time.`;
   }
   if (isFirstPack) {
-    return `Your first pack is ready — add your video link after uploading and VidUp will make the next one more accurate for you.`;
+    return `Your first pack is ready. Add your video link after uploading and VidUp will make the next one more accurate for you.`;
   }
-  return `Pack generated using your ${channelName ?? "channel"} data — add your video link after uploading so VidUp can learn what works for your audience.`;
+  return `Pack generated using your ${channelName ?? "channel"} data. Add your video link after uploading so VidUp can learn what works for your audience.`;
 }
 
 interface Props {
@@ -129,7 +129,7 @@ export default function MarkAsUsedButton({
                 Make your next pack smarter
               </h2>
               <p className="text-[14px] text-[#888888] leading-relaxed">
-                Add the link of the video where you used this pack — VidUp learns from it
+                Add the link of the video where you used this pack.VidUp learns from it
                 to generate more accurate results for you next time.
               </p>
             </div>
@@ -201,7 +201,7 @@ export default function MarkAsUsedButton({
           <div className="flex flex-col gap-1.5">
             <span className="inline-flex items-center gap-2 text-[14px] font-medium text-[#3D3D3D]">
               <CheckCircle2 size={16} strokeWidth={2.5} className="text-[#16A34A]" />
-              Thanks — your next pack will be smarter
+              Thanks.your next pack will be smarter
             </span>
             <p className="text-[13px] text-[#9B9B9B] pl-6">
               VidUp will use this to understand what your audience responds to.

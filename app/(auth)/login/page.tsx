@@ -2,7 +2,7 @@ import AuthForm from "@/app/components/AuthForm";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Sign in — VidUp",
+  title: "Sign in | VidUp",
 };
 
 export default function LoginPage() {

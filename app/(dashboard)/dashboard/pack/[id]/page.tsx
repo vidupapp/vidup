@@ -11,7 +11,7 @@ import type { TitleItem, HookItem, ThumbnailItem } from "@/lib/prompts";
 
 type PackRow = Database["public"]["Tables"]["packs"]["Row"];
 
-export const metadata = { title: "Your Pack — VidUp" };
+export const metadata = { title: "Your Pack | VidUp" };
 
 function formatCount(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -178,7 +178,7 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
           <div className="p-5 border-b border-[#F5F5F5]">
             <div className="flex items-center justify-between mb-3">
               <p className="text-[13px] font-semibold text-[#E8192C] uppercase tracking-wider">
-                Full Script (30–45 sec)
+                Full Script (30-45 sec)
               </p>
               <CopyButton text={hook.full_script} />
             </div>

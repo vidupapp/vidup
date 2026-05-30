@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Check, Gift, Users } from "lucide-react";
 import CopyReferralLink from "./CopyReferralLink";
 
-export const metadata = { title: "Refer & Earn — VidUp" };
+export const metadata = { title: "Refer & Earn | VidUp" };
 
 export default async function ReferralPage() {
   const supabase = await createClient();
@@ -47,7 +47,7 @@ export default async function ReferralPage() {
   }
 
   const whatsappText = encodeURIComponent(
-    `I use VidUp to generate YouTube titles, hooks and thumbnails in one click — it's insane. Sign up free here and get 5 bonus credits: ${referralUrl}`
+    `I use VidUp to generate YouTube titles, hooks and thumbnails in one click. It's insane. Sign up free here and get 5 bonus credits: ${referralUrl}`
   );
 
   return (
@@ -58,7 +58,7 @@ export default async function ReferralPage() {
           Refer & Earn
         </h1>
         <p className="text-[14px] text-[#888888] mt-0.5">
-          Share VidUp with creators you know — both of you earn 5 credits when they buy their first pack.
+          Share VidUp with creators you know. Both of you earn 5 credits when they buy their first pack.
         </p>
       </div>
 
@@ -108,7 +108,7 @@ export default async function ReferralPage() {
         <div className="flex flex-col gap-4">
           {[
             { n: "1", text: "Share your unique link with a YouTube creator you know." },
-            { n: "2", text: "They sign up and try VidUp free — no credit card needed." },
+            { n: "2", text: "They sign up and try VidUp free. No credit card needed." },
             { n: "3", text: "When they buy their first credit pack, you both get 5 bonus credits instantly." },
           ].map((step) => (
             <div key={step.n} className="flex items-start gap-3">
@@ -127,7 +127,7 @@ export default async function ReferralPage() {
         <div className="flex flex-col gap-1.5">
           {[
             "Bonus credits are added when your friend makes their first purchase only",
-            "You earn 5 credits per referral — no cap on how many friends you can refer",
+            "You earn 5 credits per referral, no cap on how many friends you can refer",
             "Credits never expire and stack on top of your balance",
             "Self-referrals are not allowed",
           ].map((t) => (

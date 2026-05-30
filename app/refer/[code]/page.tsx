@@ -71,7 +71,7 @@ export default async function ReferralLandingPage({
         </h1>
 
         <p className="text-[18px] text-[#888888] max-w-lg leading-relaxed mb-10">
-          VidUp generates titles, hook scripts, and thumbnail ideas in one click — calibrated to real competitor data. Used by 10K+ YouTube creators.
+          VidUp generates titles, hook scripts, and thumbnail ideas in one click, calibrated to real competitor data. Used by 10K+ YouTube creators.
         </p>
 
         {/* Offer card */}
@@ -82,11 +82,11 @@ export default async function ReferralLandingPage({
           <div className="flex items-center justify-center gap-2 mb-3">
             <Zap size={20} className="text-[#E8192C]" strokeWidth={2.5} />
             <span className="text-[22px] font-extrabold text-white" style={{ letterSpacing: "-0.5px" }}>
-              5 bonus credits — free
+              5 bonus credits, free
             </span>
           </div>
           <p className="text-[14px] text-[#888888] leading-relaxed">
-            Sign up through this invite link and get 5 extra credits on your first purchase — on top of your 2 free monthly credits.
+            Sign up through this invite link and get 5 extra credits on your first purchase, on top of your 2 free monthly credits.
           </p>
         </div>
 
@@ -117,11 +117,11 @@ export default async function ReferralLandingPage({
               },
               {
                 title: "Hook Script",
-                desc: "A 30–45 second spoken opener — paste-ready. Built to stop the scroll in the first 3 seconds.",
+                desc: "A 30-45 second spoken opener. Paste-ready. Built to stop the scroll in the first 3 seconds.",
               },
               {
                 title: "3 Thumbnail Ideas",
-                desc: "Layout, emotion, text overlay, color mood — specific enough to build on Canva without guessing.",
+                desc: "Layout, emotion, text overlay, color mood. Specific enough to build on Canva without guessing.",
               },
             ].map((item) => (
               <div
@@ -147,7 +147,7 @@ export default async function ReferralLandingPage({
             {[
               { n: "01", title: "Add your YouTube channel", desc: "VidUp fetches your audience data, category, and recent videos automatically." },
               { n: "02", title: "Paste 3 competitor links", desc: "Pick 3 videos from your niche that are performing well. VidUp analyzes what's working." },
-              { n: "03", title: "Get your complete pack", desc: "3 titles, a hook script, and 3 thumbnail ideas — calibrated to your channel and competitors." },
+              { n: "03", title: "Get your complete pack", desc: "3 titles, a hook script, and 3 thumbnail ideas, calibrated to your channel and competitors." },
             ].map((step) => (
               <div key={step.n} className="flex items-start gap-5">
                 <span

@@ -43,9 +43,9 @@ export default function OnboardingCard() {
       {/* Bullets */}
       <div className="flex flex-col gap-2 mb-5">
         {[
-          "You have 2 free credits this month — enough to generate 2 complete packs.",
+          "You have 2 free credits this month, enough to generate 2 complete packs.",
           "Credits never expire once purchased. Buy more anytime, use them at your pace.",
-          "Refer a creator friend — you both get 5 bonus credits when they buy their first pack.",
+          "Refer a creator friend. You both get 5 bonus credits when they buy their first pack.",
         ].map((text) => (
           <div key={text} className="flex items-start gap-2.5">
             <CheckCircle2 size={16} strokeWidth={2.5} className="text-[#E8192C] shrink-0 mt-0.5" />

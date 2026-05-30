@@ -5,16 +5,16 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
 export const AUDIENCES = [
-  "Students (School) — 10-16 years",
-  "Students (College) — 17-22 years",
-  "Young Professionals — 22-30 years",
-  "Working Professionals — 30-45 years",
-  "Entrepreneurs — any age",
-  "Parents — 28-45 years",
-  "Homemakers — 25-50 years",
-  "Senior Professionals — 45+",
-  "General Audience — all ages",
-  "Kids — under 12",
+  "Students (School), 10-16 years",
+  "Students (College), 17-22 years",
+  "Young Professionals, 22-30 years",
+  "Working Professionals, 30-45 years",
+  "Entrepreneurs, any age",
+  "Parents, 28-45 years",
+  "Homemakers, 25-50 years",
+  "Senior Professionals, 45+",
+  "General Audience, all ages",
+  "Kids, under 12",
 ];
 
 function validateYouTubeUrl(url: string): "empty" | "valid" | "invalid" {
@@ -157,7 +157,7 @@ export default function AddChannelForm({ channelCount }: { channelCount: number 
         </div>
       </div>
 
-      {/* Target Audience — multi-select pills, max 3 */}
+      {/* Target Audience, multi-select pills, max 3 */}
       <div className="flex flex-col gap-3">
         <div>
           <label className="text-[14px] font-medium text-[#111111]">

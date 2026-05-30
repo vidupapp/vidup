@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Tv2, PlusCircle, ArrowLeftRight, Zap } from "lucide-react";
 import NewPackForm from "./NewPackForm";
 
-export const metadata = { title: "New Pack — VidUp" };
+export const metadata = { title: "New Pack | VidUp" };
 
 export default async function NewPackPage() {
   const supabase = await createClient();

@@ -8,7 +8,7 @@ import { ChannelCard, EmptyChannelSlot } from "./ChannelCard";
 import type { Database } from "@/lib/supabase/types";
 import { fetchChannelData } from "@/lib/youtube";
 
-export const metadata = { title: "Your Channels — VidUp" };
+export const metadata = { title: "Your Channels | VidUp" };
 
 type Channel = Database["public"]["Tables"]["channels"]["Row"];
 

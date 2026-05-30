@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Zap, Mail, Calendar } from "lucide-react";
 import { formatResetDate } from "@/lib/credits";
 
-export const metadata = { title: "Profile — VidUp" };
+export const metadata = { title: "Profile | VidUp" };
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-IN", {
@@ -84,7 +84,7 @@ export default async function ProfilePage() {
           <div className="flex items-start gap-3 px-6 py-4">
             <Zap size={16} strokeWidth={2} className="text-[#E8192C] shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-[12px] text-[#888888] mb-1">Credits — {credits} total</p>
+              <p className="text-[12px] text-[#888888] mb-1">Credits: {credits} total</p>
               <div className="flex flex-col gap-1">
                 <p className="text-[13px] text-[#3D3D3D]">
                   Free: <span className="font-semibold text-[#111111]">{freeCr}</span>

@@ -67,9 +67,9 @@ const notoMalayalam = Noto_Sans_Malayalam({
 });
 
 export const metadata: Metadata = {
-  title: "VidUp — One click. Viral ready.",
+  title: "VidUp: One click. Viral ready.",
   description:
-    "VidUp analyzes your competitors and generates your complete pre-production pack — 3 titles, 1 hook script, and 3 thumbnail ideas — in seconds. Built for YouTube creators.",
+    "VidUp analyzes your competitors and generates your complete pre-production pack: 3 titles, 1 hook script, and 3 thumbnail ideas, in seconds. Built for YouTube creators.",
 };
 
 export default function RootLayout({

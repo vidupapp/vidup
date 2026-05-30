@@ -10,12 +10,12 @@ const steps = [
   {
     number: "02",
     title: "We analyze what's working",
-    desc: "VidUp reads your competitors' patterns — titles, hooks, and thumbnails that actually perform.",
+    desc: "VidUp reads your competitors' patterns: titles, hooks, and thumbnails that actually perform.",
   },
   {
     number: "03",
     title: "Get your full pack",
-    desc: "3 scroll-stopping titles, 1 hook script, and 3 thumbnail ideas — in seconds.",
+    desc: "3 scroll-stopping titles, 1 hook script, and 3 thumbnail ideas. In seconds.",
   },
 ];
 
@@ -28,7 +28,7 @@ const outputCards = [
       "Emotional Trigger title",
       "SEO Optimised title",
       "Click score out of 10",
-      "Why it works — 1 line",
+      "Why it works: 1 line",
     ],
     note: "Each title scored against competitor patterns",
   },
@@ -37,12 +37,12 @@ const outputCards = [
     title: "1 Hook Script",
     items: [
       "Opening line (scroll stopper)",
-      "Tension builder (3–4 sentences)",
+      "Tension builder (3-4 sentences)",
       "Payoff promise",
-      "Full 30–45 sec script",
+      "Full 30-45 sec script",
       "Psychological trigger used",
     ],
-    note: "Paste-ready — no editing needed",
+    note: "Paste-ready. No editing needed.",
   },
   {
     icon: "🖼️",
@@ -139,7 +139,7 @@ export default function Home() {
         </h1>
 
         <p className="text-[#888888] text-[18px] leading-relaxed max-w-[520px] mb-10">
-          VidUp analyzes your competitors and generates 3 titles, 1 hook script, and 3 thumbnail ideas — in seconds.
+          VidUp analyzes your competitors and generates 3 titles, 1 hook script, and 3 thumbnail ideas. In seconds.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-5">
@@ -196,7 +196,7 @@ export default function Home() {
           >
             <p className="text-[11px] font-semibold uppercase tracking-widest text-[#E8192C] mb-4">Hook Script</p>
             <p className="text-white/75 text-[13px] leading-relaxed mb-4">
-              &quot;Ye video dekh ke tumhara next video 2x better perform karega — guaranteed. Main tumhe woh 3 cheezein dikhaunga jo top creators karte hain...&quot;
+              &quot;Ye video dekh ke tumhara next video 2x better perform karega, guaranteed. Main tumhe woh 3 cheezein dikhaunga jo top creators karte hain...&quot;
             </p>
             <span className="inline-flex items-center bg-[#E8192C]/15 text-[#E8192C] text-[11px] font-semibold px-3 py-1 rounded-full">
               Trigger: Curiosity Gap
@@ -321,7 +321,7 @@ export default function Home() {
             <span className="text-[#888888]">Your audience.</span>
           </h2>
           <p className="text-[#888888] text-[18px] max-w-[480px] mx-auto mb-12 leading-relaxed">
-            Output in 10 languages, with natural code-switching — the way creators actually speak.
+            Output in 10 languages, with natural code-switching. The way creators actually speak.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3 mb-8">
@@ -336,7 +336,7 @@ export default function Home() {
           </div>
 
           <p className="text-[#888888] text-[14px]">
-            Not formal. Not bookish. Think Hinglish — how creators speak on WhatsApp.
+            Not formal. Not bookish. Think Hinglish, how creators speak on WhatsApp.
           </p>
         </div>
       </section>
@@ -365,7 +365,7 @@ export default function Home() {
             {[
               "1 credit = 1 complete pack (3 titles + 1 hook script + 3 thumbnail ideas)",
               "Free credits reset monthly on your signup date. Purchased credits never expire.",
-              "Refer a friend — you both earn 5 credits when they make their first purchase.",
+              "Refer a friend. You both earn 5 credits when they make their first purchase.",
             ].map((text) => (
               <div key={text} className="flex items-start gap-3">
                 <CheckCircle2 size={16} strokeWidth={2.5} className="text-[#E8192C] shrink-0 mt-0.5" />

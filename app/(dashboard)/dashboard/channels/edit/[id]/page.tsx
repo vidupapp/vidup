@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import EditChannelForm from "./EditChannelForm";
 
-export const metadata = { title: "Edit Channel — VidUp" };
+export const metadata = { title: "Edit Channel | VidUp" };
 
 function parseAudience(raw: unknown): string[] {
   if (!raw) return [];

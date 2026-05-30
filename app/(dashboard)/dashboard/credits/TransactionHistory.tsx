@@ -176,7 +176,7 @@ export default function TransactionHistory({ transactions }: Props) {
           </button>
 
           <p className="text-[12px] text-[#AAAAAA] tabular-nums">
-            {start + 1}–{Math.min(start + PAGE_SIZE, filtered.length)} of {filtered.length}
+            {start + 1}-{Math.min(start + PAGE_SIZE, filtered.length)} of {filtered.length}
           </p>
 
           <button

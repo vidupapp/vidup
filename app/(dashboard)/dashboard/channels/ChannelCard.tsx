@@ -237,7 +237,7 @@ export function ChannelCard({ channel }: { channel: Channel }) {
             </div>
             <div>
               <p className="text-[11px] font-semibold text-[#888888] uppercase tracking-wider mb-0.5">Uploads</p>
-              <p className="text-[16px] font-bold text-[#111111]">{channel.upload_frequency || "—"}</p>
+              <p className="text-[16px] font-bold text-[#111111]">{channel.upload_frequency || "N/A"}</p>
             </div>
           </div>
 

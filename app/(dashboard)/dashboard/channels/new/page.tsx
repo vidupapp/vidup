@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import AddChannelForm from "./AddChannelForm";
 
-export const metadata = { title: "Add Channel — VidUp" };
+export const metadata = { title: "Add Channel | VidUp" };
 
 export default async function AddChannelPage() {
   const supabase = await createClient();

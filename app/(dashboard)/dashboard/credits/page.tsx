@@ -7,7 +7,7 @@ import type { Database } from "@/lib/supabase/types";
 
 type CreditTx = Database["public"]["Tables"]["credit_transactions"]["Row"];
 
-export const metadata = { title: "Credits — VidUp" };
+export const metadata = { title: "Credits | VidUp" };
 
 export default async function CreditsPage() {
   const supabase = await createClient();

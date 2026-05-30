@@ -5,16 +5,16 @@ import { useRouter } from "next/navigation";
 import { Lock, AlertCircle } from "lucide-react";
 
 const AUDIENCES = [
-  "Students (School) — 10-16 years",
-  "Students (College) — 17-22 years",
-  "Young Professionals — 22-30 years",
-  "Working Professionals — 30-45 years",
-  "Entrepreneurs — any age",
-  "Parents — 28-45 years",
-  "Homemakers — 25-50 years",
-  "Senior Professionals — 45+",
-  "General Audience — all ages",
-  "Kids — under 12",
+  "Students (School), 10-16 years",
+  "Students (College), 17-22 years",
+  "Young Professionals, 22-30 years",
+  "Working Professionals, 30-45 years",
+  "Entrepreneurs, any age",
+  "Parents, 28-45 years",
+  "Homemakers, 25-50 years",
+  "Senior Professionals, 45+",
+  "General Audience, all ages",
+  "Kids, under 12",
 ];
 
 interface Props {
@@ -84,7 +84,7 @@ export default function EditChannelForm({ channelId, channelUrl, currentAudience
         </p>
       </div>
 
-      {/* Target Audience — multi-select pills */}
+      {/* Target Audience, multi-select pills */}
       <div className="flex flex-col gap-3">
         <div>
           <label className="text-[14px] font-medium text-[#111111]">
