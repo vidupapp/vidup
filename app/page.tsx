@@ -123,7 +123,7 @@ export default function Home() {
             href="/login"
             className="hidden sm:inline-flex items-center gap-1.5 bg-[#E8192C] text-white text-[15px] font-semibold px-7 py-[11px] rounded-full hover:bg-[#C41523] transition-all"
           >
-            Get Started Free →
+            Get Started Free
           </Link>
 
           <Link href="/login" className="sm:hidden bg-[#E8192C] text-white text-[14px] font-semibold px-5 py-2 rounded-full hover:bg-[#C41523] transition-all">
@@ -164,7 +164,7 @@ export default function Home() {
             href="/login"
             className="bg-[#E8192C] text-white text-[15px] font-semibold px-8 py-4 rounded-full hover:bg-[#C41523] transition-all hover:shadow-[0_4px_16px_rgba(232,25,44,0.35)]"
           >
-            Get Started Free →
+            Get Started Free
           </Link>
           <a
             href="#how-it-works"
@@ -488,7 +488,7 @@ export default function Home() {
           href="/login"
           className="bg-[#E8192C] text-white text-[15px] font-semibold px-8 py-4 rounded-full hover:bg-[#C41523] hover:shadow-[0_4px_16px_rgba(232,25,44,0.35)] transition-all"
         >
-          Get Started Free →
+          Get Started Free
         </Link>
         <p className="text-[#555555] text-[12px] mt-5">2 free credits/month · No card required</p>
       </section>
