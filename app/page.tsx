@@ -449,8 +449,8 @@ export default function Home() {
           >
             <span className="w-5 h-5 rounded-full bg-[#16A34A] flex items-center justify-center shrink-0 mt-0.5 text-white text-[11px] font-bold">+</span>
             <p style={{ fontSize: "14px", color: "#3D3D3D", lineHeight: "1.6" }}>
-              <span style={{ fontWeight: 600, color: "#15803D" }}>Free credits never go away.</span>{" "}
-              Even after buying a pack, you still get 2 fresh credits every month on top of your balance.
+              <span style={{ fontWeight: 600, color: "#15803D" }}>Buying credits doesn&apos;t cancel your free plan.</span>{" "}
+              You still get 2 free credits every month, even after purchasing.
             </p>
           </div>
 
