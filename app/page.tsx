@@ -379,16 +379,20 @@ export default function Home() {
 
             {/* Free card */}
             <div
-              className="relative flex flex-col bg-white rounded-2xl border border-[#F0F0F0]"
-              style={{ padding: "28px", boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)" }}
+              className="relative flex flex-col rounded-2xl border-2 border-[#86EFAC]"
+              style={{ padding: "28px", background: "#F0FDF4", boxShadow: "0 2px 8px rgba(22,163,74,0.08), 0 8px 32px rgba(22,163,74,0.06)" }}
             >
+              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#16A34A] text-white text-[12px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-full whitespace-nowrap">
+                ALWAYS FREE
+              </span>
               <p style={{ fontSize: "56px", fontWeight: 800, color: "#111111", lineHeight: 1 }}>2</p>
               <p style={{ fontSize: "14px", fontWeight: 400, color: "#9B9B9B", marginTop: "4px" }}>credits / month</p>
-              <p style={{ fontSize: "13px", fontWeight: 400, color: "#9B9B9B", marginTop: "16px" }}>Resets on signup date</p>
+              <p style={{ fontSize: "12px", fontWeight: 600, color: "#16A34A", marginTop: "6px" }}>every month, forever</p>
+              <p style={{ fontSize: "13px", fontWeight: 400, color: "#9B9B9B", marginTop: "12px" }}>Resets on signup date</p>
               <Link
                 href="/login"
-                className="w-full text-white font-semibold text-[15px] text-center rounded-full bg-[#111111] hover:bg-zinc-800 transition-all"
-                style={{ marginTop: "24px", paddingTop: "14px", paddingBottom: "14px", display: "block" }}
+                className="w-full text-white font-semibold text-[15px] text-center rounded-full transition-all hover:opacity-90"
+                style={{ marginTop: "24px", paddingTop: "14px", paddingBottom: "14px", display: "block", background: "#16A34A" }}
               >
                 Get Started Free
               </Link>
@@ -438,8 +442,20 @@ export default function Home() {
             ))}
           </div>
 
-          <p className="text-center text-[13px] mt-4" style={{ color: "#9B9B9B" }}>
-            Credits never expire · Stack across purchases
+          {/* Stacking callout */}
+          <div
+            className="mt-6 flex items-start gap-3 rounded-2xl px-5 py-4 max-w-2xl mx-auto w-full"
+            style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}
+          >
+            <span className="w-5 h-5 rounded-full bg-[#16A34A] flex items-center justify-center shrink-0 mt-0.5 text-white text-[11px] font-bold">+</span>
+            <p style={{ fontSize: "14px", color: "#3D3D3D", lineHeight: "1.6" }}>
+              <span style={{ fontWeight: 600, color: "#15803D" }}>Free credits never go away.</span>{" "}
+              Even after buying a pack, you still get 2 fresh credits every month on top of your balance.
+            </p>
+          </div>
+
+          <p className="text-center text-[13px] mt-3" style={{ color: "#9B9B9B" }}>
+            Purchased credits never expire · Stack across purchases
           </p>
         </div>
       </section>
