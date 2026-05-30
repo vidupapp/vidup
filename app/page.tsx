@@ -461,6 +461,9 @@ export default function Home() {
             All packs unlock full features. Credits never expire and stack when you buy more.<br />
             Top up anytime.
           </p>
+          <p className="text-center text-[14px] mt-4" style={{ color: "#9B9B9B" }}>
+            Start free with 2 credits every month. Buy more anytime — credits never expire.
+          </p>
         </div>
       </section>
 

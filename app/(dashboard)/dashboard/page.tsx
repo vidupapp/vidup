@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import type { Database } from "@/lib/supabase/types";
+import OnboardingCard from "./OnboardingCard";
 
 export const metadata = {
   title: "Dashboard — VidUp",
@@ -32,19 +33,29 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: packs } = await supabase
-    .from("packs")
-    .select("pack_id, topic, style, language, status, created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false }) as {
-      data: Pick<Pack, "pack_id" | "topic" | "style" | "language" | "status" | "created_at">[] | null;
-      error: unknown;
-    };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any;
+  const [{ data: packs }, { data: profile }] = await Promise.all([
+    db.from("packs")
+      .select("pack_id, topic, style, language, status, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }) as Promise<{
+        data: Pick<Pack, "pack_id" | "topic" | "style" | "language" | "status" | "created_at">[] | null;
+        error: unknown;
+      }>,
+    db.from("users")
+      .select("onboarding_dismissed")
+      .eq("user_id", user.id)
+      .single() as Promise<{ data: { onboarding_dismissed: boolean } | null; error: unknown }>,
+  ]);
 
   const list = packs ?? [];
+  const showOnboarding = !profile?.onboarding_dismissed;
 
   return (
     <div className="p-6 sm:p-8">
+      {showOnboarding && <OnboardingCard />}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

@@ -19,6 +19,7 @@ export type Database = {
           purchased_credits: number;      // new: never expires
           referral_credits: number;       // new: never expires
           free_credits_reset_date: string | null;
+          onboarding_dismissed: boolean;
           signup_date: string;
           monthly_reset_date: string;
           referral_code: string;
@@ -47,6 +48,7 @@ export type Database = {
           purchased_credits?: number;
           referral_credits?: number;
           free_credits_reset_date?: string | null;
+          onboarding_dismissed?: boolean;
           monthly_reset_date?: string;
           referred_by?: string | null;
         };
