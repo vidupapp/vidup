@@ -7,6 +7,8 @@ import { extractVideoId, fetchVideoMetadata } from "@/lib/youtube";
 import {
   buildAnalysisPrompt,
   buildGenerationPrompt,
+  interpolateAnalysis,
+  interpolateGeneration,
   extractJSON,
   LANGUAGE_RULES,
   type AnalysisResult,
@@ -123,13 +125,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Step 2: Claude Call 1 — Competitor Analysis ───────────
+    // ── Step 2: Fetch all prompt templates from Supabase in parallel ─
+    const videosJson = JSON.stringify(videos, null, 2);
+
+    const [analysisRow, generationRow, langRulesRow] = await Promise.allSettled([
+      db.from("prompts").select("prompt_text").eq("call_type", "analysis").eq("language", "all").single(),
+      db.from("prompts").select("prompt_text").eq("call_type", "generation").eq("language", "all").single(),
+      db.from("prompts").select("prompt_text").eq("call_type", "language_rules").eq("language", language).single(),
+    ]);
+
+    const analysisTemplate  = analysisRow.status  === "fulfilled" ? analysisRow.value.data?.prompt_text  : null;
+    const generationTemplate = generationRow.status === "fulfilled" ? generationRow.value.data?.prompt_text : null;
+    const languageRules      = langRulesRow.status  === "fulfilled" ? langRulesRow.value.data?.prompt_text  : null;
+
+    if (!analysisTemplate)  console.warn("[generate] analysis prompt not in DB — using hardcoded fallback");
+    if (!generationTemplate) console.warn("[generate] generation prompt not in DB — using hardcoded fallback");
+    if (!languageRules)      console.warn(`[generate] language rules not in DB for "${language}" — using hardcoded fallback`);
+
+    // ── Step 3: Claude Call 1 — Competitor Analysis ───────────
+    const analysisPromptText = analysisTemplate
+      ? interpolateAnalysis(analysisTemplate, videosJson)
+      : buildAnalysisPrompt(videosJson);
+
     let analysis: AnalysisResult;
     try {
       const analysisMsg = await anthropic.messages.create({
         model: MODEL,
         max_tokens: 2048,
-        messages: [{ role: "user", content: buildAnalysisPrompt(JSON.stringify(videos, null, 2)) }],
+        messages: [{ role: "user", content: analysisPromptText }],
       });
 
       const raw = analysisMsg.content[0].type === "text" ? analysisMsg.content[0].text : "";
@@ -142,28 +165,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Step 2b: Fetch language rules from Supabase (with fallback) ─
-    let languageRules: string | undefined;
-    try {
-      const { data: rulesRow, error: rulesError } = await db
-        .from("prompts")
-        .select("prompt_text")
-        .eq("language", language)
-        .eq("call_type", "language_rules")
-        .single() as { data: { prompt_text: string } | null; error: unknown };
+    // ── Step 4: Claude Call 2 — Pack Generation ───────────────
+    const generationPromptText = generationTemplate
+      ? interpolateGeneration(generationTemplate, topic, style, language, analysis, channelContext, languageRules ?? undefined)
+      : buildGenerationPrompt(topic, style, language, analysis, channelContext, languageRules ?? undefined);
 
-      if (rulesError || !rulesRow?.prompt_text) {
-        console.warn(`[generate] language rules not found in DB for "${language}" — using hardcoded fallback`);
-        languageRules = LANGUAGE_RULES[language];
-      } else {
-        languageRules = rulesRow.prompt_text;
-      }
-    } catch (err) {
-      console.warn("[generate] language rules fetch threw — using hardcoded fallback:", err);
-      languageRules = LANGUAGE_RULES[language];
-    }
-
-    // ── Step 3: Claude Call 2 — Pack Generation ───────────────
     let pack: PackResult;
     try {
       const generationMsg = await anthropic.messages.create({
@@ -172,7 +178,7 @@ export async function POST(req: NextRequest) {
         messages: [
           {
             role: "user",
-            content: buildGenerationPrompt(topic, style, language, analysis, channelContext, languageRules),
+            content: generationPromptText,
           },
         ],
       });
@@ -189,7 +195,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Step 4: Save pack to Supabase ─────────────────────────
+    // ── Step 5: Save pack to Supabase ─────────────────────────
     const { data: savedPack, error: saveError } = await db
       .from("packs")
       .insert({
@@ -211,13 +217,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to save pack. Please try again." }, { status: 500 });
     }
 
-    // ── Step 5: Deduct credit (order: free → purchased → referral) ───
+    // ── Step 6: Deduct credit (order: free → purchased → referral) ───
     const deduction = computeDeduction(profile);
     if (deduction) {
       await db.from("users").update(deduction).eq("user_id", user.id);
     }
 
-    // ── Step 6: Record credit transaction ────────────────────────────
+    // ── Step 7: Record credit transaction ────────────────────────────
     await admin.from("credit_transactions").insert({
       user_id: user.id,
       type: "generation",

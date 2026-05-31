@@ -732,6 +732,66 @@ FINAL CHECK:
 → Grammar is punchy and correct?`,
 };
 
+// ── Template interpolation (used when prompts are fetched from Supabase) ──
+
+export function interpolateAnalysis(template: string, videosJson: string): string {
+  return template.replace(/\{\{VIDEOS_JSON\}\}/g, videosJson);
+}
+
+export function interpolateGeneration(
+  template: string,
+  topic: string,
+  style: string,
+  language: string,
+  analysis: AnalysisResult,
+  channel?: ChannelContext,
+  languageRules?: string
+): string {
+  const resolvedRules = languageRules ??
+    LANGUAGE_RULES[language] ??
+    `LANGUAGE: Write in ${language}. Natural, conversational, creator-native style. No formal or academic language.`;
+
+  const category = channel?.content_category ?? "general";
+  const audienceStr = channel ? formatAudience(channel.target_audience) : "general audience";
+  const calibration = channel
+    ? `a ${formatCount(channel.subscriber_count)} subscriber channel`
+    : "this creator's level";
+
+  const channelSection = channel ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREATOR'S CHANNEL — calibrate EVERYTHING to this creator:
+Channel: ${channel.channel_name}
+Subscribers: ${formatCount(channel.subscriber_count)}
+Avg Views (recent 10 videos): ${formatCount(channel.avg_views)}
+Content Category: ${channel.content_category ?? "Not specified"}
+Target Audience: ${audienceStr}
+Upload Frequency: ${channel.upload_frequency}
+
+Study these recent video titles from this creator carefully:
+${channel.recent_video_titles.slice(0, 5).map((t, i) => `  ${i + 1}. ${t}`).join("\n")}
+
+Your output must feel like the natural NEXT VIDEO from this channel. Match:
+→ The energy and tone of their existing titles
+→ The vocabulary level of their audience
+→ Content depth appropriate for ${formatCount(channel.subscriber_count)} subscribers
+→ The style their ${formatCount(channel.avg_views)} average-view audience responds to
+
+CRITICAL: Do NOT produce titles that sound bigger, more polished, or more viral than this creator's current content. A 10K channel sounds different from a 1M channel. Authenticity beats aspiration.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+` : "";
+
+  return template
+    .replace(/\{\{TOPIC\}\}/g, topic)
+    .replace(/\{\{STYLE\}\}/g, style)
+    .replace(/\{\{LANGUAGE\}\}/g, language)
+    .replace(/\{\{CATEGORY\}\}/g, category)
+    .replace(/\{\{CHANNEL_SECTION\}\}/g, channelSection)
+    .replace(/\{\{LANGUAGE_RULES\}\}/g, resolvedRules)
+    .replace(/\{\{ANALYSIS_JSON\}\}/g, JSON.stringify(analysis, null, 2))
+    .replace(/\{\{DOMINANT_TRIGGER\}\}/g, analysis.dominant_trigger ?? "Curiosity")
+    .replace(/\{\{CHANNEL_CALIBRATION\}\}/g, calibration);
+}
+
 // ── Call 1: Analysis Prompt ───────────────────────────────────
 
 export function buildAnalysisPrompt(videosJson: string): string {

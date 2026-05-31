@@ -552,12 +552,33 @@ Only merge to main when tested and ready.
 - [x] All button arrows (→) removed across entire app
 - [x] Bug fixes: void→await on all credit_transactions inserts, success page balance re-fetched fresh from DB, amount_paid stored in rupees not paise, generate route uses admin client for inserts
 
+### Admin System ✅ Complete (2026-05-31)
+- [x] 3 new DB tables: admins, admin_invites, admin_sessions (supabase/admin_tables.sql)
+- [x] /admin/setup — first-owner creation, 404 forever after first account
+- [x] /admin/login — bcrypt verify, 5-attempt in-memory rate limit, 30min lockout, httpOnly session cookie
+- [x] Admin session middleware in proxy.ts — validates admin_session cookie for all /admin/* except login/setup/invite
+- [x] Admin layout (dark sidebar #111111, topbar #1A1A1A) with role-aware nav (Team link owner-only)
+- [x] /admin overview — 4 metric cards (users, packs, revenue, API cost) + recent signups + recent transactions tables
+- [x] /admin/prompts — lists all language_rules rows + system prompt rows with version/timestamp/edit button
+- [x] /admin/prompts/[id]/edit — monospace textarea, confirm dialog, version auto-increment, green toast
+- [x] /admin/team — member table, pending invites table, invite modal, remove confirm; owner-only (404 for other roles)
+- [x] Invite flow: Resend email from connect@vidup.in, 48hr token, /admin/invite/[token] accept page
+- [x] Route group fix: login/setup/invite are outside (protected)/ group — no redirect loop
+- [x] ENV: ADMIN_SESSION_SECRET, NEXT_PUBLIC_SITE_URL added to .env.local and needed in Vercel
+
+### Prompts Migration to Supabase ✅ Complete (2026-05-31)
+- [x] Language rules (10 languages) live in prompts table, call_type='language_rules', fetched in generate route with hardcoded fallback
+- [x] Analysis + generation system prompts in prompts table, call_type='analysis'/'generation', language='all'
+- [x] Templates use {{PLACEHOLDER}} markers (VIDEOS_JSON, LANGUAGE, TOPIC, STYLE, CHANNEL_SECTION, LANGUAGE_RULES, ANALYSIS_JSON, DOMINANT_TRIGGER, CHANNEL_CALIBRATION)
+- [x] generate route fetches all 3 prompt types from Supabase before each generation, falls back to hardcoded code if fetch fails
+- [x] All 12 prompts editable live from /admin/prompts without code deploy
+- [x] prompts_call_type_check constraint updated to allow 'analysis', 'generation', 'language_rules'
+
 ### Month 3 — Growth + Launch ⏳ Next
 - [ ] Learning data aggregation (anonymous, feeds generation engine)
 - [ ] Dashboard insights (after 5+ results: personal performance patterns)
 - [ ] Referral program (unique links, 5 credits each side)
 - [ ] Landing page SEO (meta, og images, structured data)
-- [ ] Move prompts from hardcoded to Supabase table
 - [ ] Beta testing with 20 creators
 - [ ] Launch
 
@@ -580,7 +601,7 @@ Only merge to main when tested and ready.
 | Result incentive | No credit reward | Value comes from better output, not bribe |
 | Referral reward | 5 credits each (referrer + friend) | Both sides happy, cost controlled |
 | AI model | Claude Haiku 4.5 | Best Indian language output, 81% margin |
-| Prompt storage | Hardcoded in lib/prompts.ts for now | Ship faster; Supabase migration is Month 3 |
+| Prompt storage | Supabase prompts table | All 12 prompts (10 language rules + analysis + generation) live in DB, editable from /admin/prompts |
 | Language rules | Full per-language rules in LANGUAGE_RULES map | Prevents Marathi/Hindi leakage, Tamil formality issues etc. |
 | Icons | 100% Lucide React, zero emojis | Consistent, professional, scalable |
 | Payment gateway | Cashfree (primary) | Already verified account |
@@ -628,4 +649,4 @@ Go to Google Cloud Console → Vidup YT data extractor API key → change Applic
 
 ---
 
-*Last updated: 2026-05-30 — Credits system overhauled: 3-column credit DB, full transaction history, TopBar hover popover, shared BuyCreditsModal, redesigned pack cards (no tier names), pill filters + pagination on history, all bug fixes (void→await, fresh balance fetch, paise→rupees). Month 3 (learning aggregation, referrals, SEO, launch) is next.*
+*Last updated: 2026-05-31 — Admin system built (setup/login/overview/prompts editor/team management, custom session auth, Resend invite emails). All prompts (10 language rules + analysis + generation) migrated to Supabase prompts table with {{PLACEHOLDER}} template system — editable live from /admin/prompts. Month 3 (learning aggregation, referrals, SEO, launch) is next.*
